@@ -129,7 +129,7 @@
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/YOUR_USERNAME/AIDevs.git
+   git clone https://github.com/Vedulaudayeaswar/AIDevs.git
    cd AIDevs
    ```
 
@@ -336,17 +336,11 @@ Contributions are what make the open-source community amazing! Any contributions
 
 ---
 
-## 📝 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
----
-
 ## 📧 Contact
 
-Your Name - [@yourtwitter](https://twitter.com/yourtwitter) - your.email@example.com
+Email: vedulaudayeaswar2004@gmail.com
 
-Project Link: [https://github.com/YOUR_USERNAME/AIDevs](https://github.com/YOUR_USERNAME/AIDevs)
+Project Link: [https://github.com/Vedulaudayeaswar/AIDevs](https://github.com/Vedulaudayeaswar/AIDevs)
 
 ---
 
