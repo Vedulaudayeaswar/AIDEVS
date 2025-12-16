@@ -360,5 +360,5 @@ Project Link: [https://github.com/YOUR_USERNAME/AIDevs](https://github.com/YOUR_
 
 ---
 
-<p align="center">Made with ❤️ by Your Name</p>
+<p align="center">Made with ❤️ by vedula uday easwar</p>
 <p align="center">⭐ Star this repo if you found it helpful!</p>
