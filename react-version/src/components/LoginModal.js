@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import * as THREE from "three";
 import "./LoginModal.css";
+import API_URL from "../config";
 
 const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
   const canvasRef = useRef(null);
@@ -94,7 +95,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
