@@ -1,0 +1,2607 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AIDevs - Custom AI Solutions</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Three.js Water Ripple Background -->
+    <canvas id="water-canvas"></canvas>
+
+    <!-- CSS Spherical Ball with Wave Rings -->
+    <div class="sphere-ball"></div>
+    <div class="wave-ring"></div>
+    <div class="wave-ring"></div>
+    <div class="wave-ring"></div>
+    <div class="wave-ring"></div>
+    <div class="wave-ring"></div>
+    <div class="wave-ring"></div>
+
+    <!-- Header Navigation -->
+    <header>
+      <div class="logo">
+        <svg width="40" height="40" viewBox="0 0 40 40">
+          <path
+            d="M10 15 L20 10 L30 15 L20 20 Z M20 20 L30 25 L20 30 L10 25 Z"
+            fill="currentColor"
+          />
+        </svg>
+        <span>AIDevs</span>
+      </div>
+      <nav>
+        <a href="#features">Features</a>
+        <a href="#services">Services</a>
+        <a href="#updates">Updates</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <button class="btn-primary">Get Started</button>
+    </header>
+
+    <!-- Hero Section -->
+    <main>
+      <div class="hero-content">
+        <div class="badge">
+          <svg width="16" height="16" viewBox="0 0 16 16">
+            <path
+              d="M8 2 L10 6 L14 6 L11 9 L12 13 L8 10 L4 13 L5 9 L2 6 L6 6 Z"
+              fill="currentColor"
+            />
+          </svg>
+          <span>AI AUTOMATION FOR PROFESSIONAL DEVELOPERS</span>
+        </div>
+
+        <h1>
+          <div class="logo-large">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle
+                cx="50"
+                cy="50"
+                r="45"
+                fill="#333"
+                stroke="#666"
+                stroke-width="2"
+              />
+              <path
+                d="M30 40 L50 30 L70 40 L50 50 Z M50 50 L70 60 L50 70 L30 60 Z"
+                fill="white"
+              />
+            </svg>
+          </div>
+          <span class="brand-name">AI<span class="brand-ai">DEVS</span></span>
+        </h1>
+
+        <p class="tagline">
+          Custom AI solutions, built for the innovators of tomorrow
+        </p>
+
+        <div class="cta-buttons">
+          <button class="btn-primary btn-large">
+            Get Started
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              style="margin-left: 8px"
+            >
+              <path
+                d="M5 10 L15 10 M10 5 L15 10 L10 15"
+                stroke="currentColor"
+                stroke-width="2"
+                fill="none"
+              />
+            </svg>
+          </button>
+          <button class="btn-secondary btn-large">See Our Services</button>
+        </div>
+      </div>
+
+      <!-- Floating Button -->
+      <button class="btn-floating">
+        <svg width="20" height="20" viewBox="0 0 20 20">
+          <rect x="3" y="3" width="6" height="6" fill="currentColor" />
+          <rect x="11" y="3" width="6" height="6" fill="currentColor" />
+          <rect x="3" y="11" width="6" height="6" fill="currentColor" />
+          <rect x="11" y="11" width="6" height="6" fill="currentColor" />
+        </svg>
+        Get AIDevs
+      </button>
+    </main>
+
+    <!-- Testimonial Section -->
+    <section class="testimonial-section">
+      <div class="testimonial-content">
+        <p class="testimonial-text">
+          "We turn <span class="highlight">your ideas</span> into full-stack
+          websites, understand your vision, and
+          <span class="highlight">use AI</span> to build exactly what you need.
+          The best part? <span class="highlight">We iterate</span>, too."
+        </p>
+        <div class="testimonial-author">
+          <img src="uday.jpeg" alt="Developer" class="author-image" />
+          <span class="author-name">Developer of CalmCode</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why Choose Us Section -->
+    <section class="why-choose-us">
+      <div class="section-header">
+        <div class="badge">
+          <svg width="16" height="16" viewBox="0 0 16 16">
+            <path
+              d="M8 2 L10 6 L14 6 L11 9 L12 13 L8 10 L4 13 L5 9 L2 6 L6 6 Z"
+              fill="currentColor"
+            />
+          </svg>
+          <span>BENEFITS</span>
+        </div>
+        <h2 class="section-title">Why Choose Us</h2>
+        <p class="section-subtitle">
+          Try our website because: Partner with an AI agency delivering smart
+          solutions.
+        </p>
+      </div>
+
+      <div class="cards-container">
+        <!-- Card 1: Multi-Agent Architecture -->
+        <div class="feature-card">
+          <div class="card-icon">
+            <div class="clock-animation">
+              <div class="clock-face">
+                <div class="clock-center"></div>
+                <div class="clock-hand hour-hand"></div>
+                <div class="clock-hand minute-hand"></div>
+              </div>
+            </div>
+          </div>
+          <div class="card-label">Multi-Agent Architecture</div>
+          <h3 class="card-title">Multiple Specialists Working</h3>
+          <p class="card-description">
+            AI agents collaborate—frontend creators, backend engineers, testers,
+            and a lead—all working together to build your perfect website.
+          </p>
+        </div>
+
+        <!-- Card 2: Iterative Refinement -->
+        <div class="feature-card">
+          <div class="card-icon">
+            <div class="chart-animation">
+              <div class="chart-label-before">BEFORE</div>
+              <div class="chart-label-after">AFTER</div>
+              <div class="chart-bars">
+                <div class="chart-bar bar-1">
+                  <div class="bar-fill"></div>
+                </div>
+                <div class="chart-bar bar-2">
+                  <div class="bar-fill"></div>
+                </div>
+                <div class="chart-bar bar-3">
+                  <div class="bar-fill"></div>
+                </div>
+                <div class="chart-bar bar-4">
+                  <div class="bar-fill"></div>
+                </div>
+              </div>
+              <div class="chart-percentage">
+                <span class="percentage-value">20</span>
+              </div>
+              <div class="chart-metric">Automation</div>
+            </div>
+          </div>
+          <div class="card-label">Iterative Refinement</div>
+          <h3 class="card-title">Compare & Choose Best</h3>
+          <p class="card-description">
+            Generate multiple frontend and backend options. Review each version,
+            select your favorite, and refine until it's exactly right.
+          </p>
+        </div>
+
+        <!-- Card 3: Real-Time Collaboration -->
+        <div class="feature-card">
+          <div class="card-icon">
+            <div class="team-animation">
+              <div class="code-icon-wrapper">
+                <svg
+                  width="48"
+                  height="48"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"
+                  />
+                </svg>
+              </div>
+              <div class="team-icon icon-1">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+                  />
+                </svg>
+              </div>
+              <div class="team-icon icon-2">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+                  />
+                </svg>
+              </div>
+              <div class="team-icon icon-3">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="card-label">Real-Time Collaboration</div>
+          <h3 class="card-title">Live Team Sync</h3>
+          <p class="card-description">
+            Watch agents collaborate in real-time. Test engineer validates code
+            while engineering lead coordinates all components instantly.
+          </p>
+        </div>
+      </div>
+
+      <!-- Continuous Carousel -->
+      <div class="carousel-wrapper">
+        <div class="carousel-track">
+          <div class="carousel-item">AI-Powered Frontend Generation</div>
+          <div class="carousel-item">Smart Backend Architecture</div>
+          <div class="carousel-item">Automated Testing & Validation</div>
+          <div class="carousel-item">Content Generation Ready</div>
+          <div class="carousel-item">Downloadable Source Files</div>
+          <div class="carousel-item">Engineering Lead Oversight</div>
+          <div class="carousel-item">Multiple Design Iterations</div>
+          <div class="carousel-item">User-Driven Refinement</div>
+          <!-- Duplicate for seamless loop -->
+          <div class="carousel-item">AI-Powered Frontend Generation</div>
+          <div class="carousel-item">Smart Backend Architecture</div>
+          <div class="carousel-item">Automated Testing & Validation</div>
+          <div class="carousel-item">Content Generation Ready</div>
+          <div class="carousel-item">Downloadable Source Files</div>
+          <div class="carousel-item">Engineering Lead Oversight</div>
+          <div class="carousel-item">Multiple Design Iterations</div>
+          <div class="carousel-item">User-Driven Refinement</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services Section with 3D Cards -->
+    <section class="services-section">
+      <div class="services-container">
+        <div class="services-header">
+          <div class="services-badge">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="3"></circle>
+              <path
+                d="M12 1v6m0 6v6M5.6 5.6l4.2 4.2m4.2 4.2l4.2 4.2M1 12h6m6 0h6M5.6 18.4l4.2-4.2m4.2-4.2l4.2-4.2"
+              ></path>
+            </svg>
+            <span>SERVICES</span>
+          </div>
+          <h2 class="services-title">Our AI-Driven Services</h2>
+          <p class="services-subtitle">
+            Leverage AI features that boost performance to your business.
+          </p>
+        </div>
+
+        <!-- Service Cards Grid -->
+        <div class="services-grid" id="servicesGrid">
+          <!-- Card 1: Full-Stack Website Generation -->
+          <div class="service-card" data-card="0">
+            <div class="service-card-content">
+              <div class="service-icon">
+                <svg
+                  width="48"
+                  height="48"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <polyline points="16 18 22 12 16 6"></polyline>
+                  <polyline points="8 6 2 12 8 18"></polyline>
+                  <line x1="12" y1="2" x2="12" y2="22"></line>
+                </svg>
+              </div>
+              <h3 class="service-title">AI-Powered Full-Stack Development</h3>
+              <p class="service-description">
+                Describe your vision in plain English. Our multi-agent system
+                generates complete frontend and backend code, comparing multiple
+                options until you find the perfect fit.
+              </p>
+            </div>
+          </div>
+
+          <!-- Card 2: Iterative Design Refinement -->
+          <div class="service-card" data-card="1">
+            <div class="service-card-content">
+              <div class="service-icon">
+                <svg
+                  width="48"
+                  height="48"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                  <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                  <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+                  <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                </svg>
+              </div>
+              <h3 class="service-title">Compare & Choose Best Designs</h3>
+              <p class="service-description">
+                Review multiple AI-generated frontend designs side-by-side.
+                Select your favorite, request modifications, and refine until it
+                matches your exact vision.
+              </p>
+            </div>
+          </div>
+
+          <!-- Card 3: Backend Architecture -->
+          <div class="service-card" data-card="2">
+            <div class="service-card-content">
+              <div class="service-icon">
+                <svg
+                  width="48"
+                  height="48"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+                  <line x1="8" y1="21" x2="16" y2="21"></line>
+                  <line x1="12" y1="17" x2="12" y2="21"></line>
+                  <path d="M6 8h4M6 12h8"></path>
+                </svg>
+              </div>
+              <h3 class="service-title">Smart Backend Engineering</h3>
+              <p class="service-description">
+                AI agents design optimal database schemas, API endpoints, and
+                server logic tailored to your requirements. Choose from multiple
+                backend architectures.
+              </p>
+            </div>
+          </div>
+
+          <!-- Card 4: Automated Testing & Validation -->
+          <div class="service-card" data-card="3">
+            <div class="service-card-content">
+              <div class="service-icon">
+                <svg
+                  width="48"
+                  height="48"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  <polyline points="9 12 11 14 15 10"></polyline>
+                </svg>
+              </div>
+              <h3 class="service-title">Test Engineer Validation</h3>
+              <p class="service-description">
+                Dedicated test agent validates functionality, checks
+                responsiveness, verifies security, and ensures production-ready
+                code quality.
+              </p>
+            </div>
+          </div>
+
+          <!-- Card 5: Content Generation -->
+          <div class="service-card" data-card="4">
+            <div class="service-card-content">
+              <div class="service-icon">
+                <svg
+                  width="48"
+                  height="48"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                  ></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="12" y1="18" x2="12" y2="12"></line>
+                  <line x1="9" y1="15" x2="15" y2="15"></line>
+                </svg>
+              </div>
+              <h3 class="service-title">AI Content Creation</h3>
+              <p class="service-description">
+                Generate captivating, high-quality content aligned with your
+                brand voice. From landing page copy to product descriptions.
+              </p>
+            </div>
+          </div>
+
+          <!-- Card 6: Downloadable Code Files -->
+          <div class="service-card" data-card="5">
+            <div class="service-card-content">
+              <div class="service-icon">
+                <svg
+                  width="48"
+                  height="48"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+              </div>
+              <h3 class="service-title">Production-Ready Code Export</h3>
+              <p class="service-description">
+                Get organized, commented, and deployment-ready frontend and
+                backend files. Download complete project structure instantly.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Process Section -->
+    <section class="process-section">
+      <div class="process-container">
+        <div class="process-header">
+          <div class="process-badge">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span>PROCESS</span>
+          </div>
+          <h2 class="process-title">Simple & Scalable</h2>
+          <p class="process-subtitle">
+            A transparent process of collaboration and feedback
+          </p>
+        </div>
+
+        <div class="process-cards">
+          <!-- Card 01: Describe Your Vision -->
+          <div class="process-card">
+            <div class="card-number">01</div>
+            <div class="card-pagination">
+              <span class="dot active"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
+            <div class="card-image-container">
+              <svg
+                class="card-image-svg"
+                viewBox="0 0 800 450"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <!-- Gradient Background -->
+                <defs>
+                  <linearGradient
+                    id="gradient1"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #14b8a6; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="50%"
+                      style="stop-color: #06b6d4; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #3b82f6; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                  <linearGradient
+                    id="phoneGradient"
+                    x1="0%"
+                    y1="0%"
+                    x2="0%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #f0f0f0; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #d0d0d0; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+
+                <!-- Background -->
+                <rect width="800" height="450" fill="#f3f4f6" />
+
+                <!-- Hand holding phone -->
+                <g transform="translate(300, 100)">
+                  <!-- Phone -->
+                  <rect
+                    x="60"
+                    y="20"
+                    width="180"
+                    height="320"
+                    rx="20"
+                    fill="url(#phoneGradient)"
+                    stroke="#999"
+                    stroke-width="3"
+                  />
+                  <rect
+                    x="70"
+                    y="35"
+                    width="160"
+                    height="290"
+                    rx="10"
+                    fill="url(#gradient1)"
+                  />
+
+                  <!-- Notch -->
+                  <rect
+                    x="120"
+                    y="30"
+                    width="60"
+                    height="8"
+                    rx="4"
+                    fill="#333"
+                  />
+
+                  <!-- Chat bubbles on screen -->
+                  <rect
+                    x="90"
+                    y="80"
+                    width="120"
+                    height="30"
+                    rx="15"
+                    fill="rgba(255,255,255,0.3)"
+                  />
+                  <rect
+                    x="100"
+                    y="120"
+                    width="100"
+                    height="30"
+                    rx="15"
+                    fill="rgba(255,255,255,0.4)"
+                  />
+                  <rect
+                    x="110"
+                    y="160"
+                    width="110"
+                    height="30"
+                    rx="15"
+                    fill="rgba(255,255,255,0.3)"
+                  />
+
+                  <!-- Typing indicator -->
+                  <circle cx="120" cy="220" r="4" fill="rgba(255,255,255,0.6)">
+                    <animate
+                      attributeName="opacity"
+                      values="0.3;1;0.3"
+                      dur="1.5s"
+                      repeatCount="indefinite"
+                    />
+                  </circle>
+                  <circle cx="135" cy="220" r="4" fill="rgba(255,255,255,0.6)">
+                    <animate
+                      attributeName="opacity"
+                      values="0.3;1;0.3"
+                      dur="1.5s"
+                      begin="0.2s"
+                      repeatCount="indefinite"
+                    />
+                  </circle>
+                  <circle cx="150" cy="220" r="4" fill="rgba(255,255,255,0.6)">
+                    <animate
+                      attributeName="opacity"
+                      values="0.3;1;0.3"
+                      dur="1.5s"
+                      begin="0.4s"
+                      repeatCount="indefinite"
+                    />
+                  </circle>
+
+                  <!-- Hand -->
+                  <ellipse
+                    cx="160"
+                    cy="320"
+                    rx="80"
+                    ry="60"
+                    fill="#fcd9bd"
+                    stroke="#e0b59a"
+                    stroke-width="2"
+                  />
+                  <path
+                    d="M 100 300 Q 90 320 100 340"
+                    fill="#fcd9bd"
+                    stroke="#e0b59a"
+                    stroke-width="2"
+                  />
+                </g>
+
+                <!-- Floating UI elements -->
+                <circle
+                  cx="100"
+                  cy="100"
+                  r="30"
+                  fill="rgba(74, 222, 128, 0.2)"
+                  opacity="0.6"
+                >
+                  <animate
+                    attributeName="cy"
+                    values="100;90;100"
+                    dur="3s"
+                    repeatCount="indefinite"
+                  />
+                </circle>
+                <rect
+                  x="650"
+                  y="80"
+                  width="60"
+                  height="60"
+                  rx="10"
+                  fill="rgba(59, 130, 246, 0.2)"
+                  opacity="0.6"
+                >
+                  <animate
+                    attributeName="y"
+                    values="80;70;80"
+                    dur="4s"
+                    repeatCount="indefinite"
+                  />
+                </rect>
+              </svg>
+            </div>
+            <h3 class="card-title">Tell Us What You Need</h3>
+            <p class="card-description">
+              Describe your website requirements in plain English. Our AI
+              analyzes your needs and prepares multiple specialized
+              agents—frontend creators, backend engineers, and testers—to start
+              building your perfect website.
+            </p>
+          </div>
+
+          <!-- Card 02: AI Agents Build & Compare -->
+          <div class="process-card">
+            <div class="card-number">02</div>
+            <div class="card-pagination">
+              <span class="dot"></span>
+              <span class="dot active"></span>
+              <span class="dot"></span>
+            </div>
+            <div class="card-image-container">
+              <svg
+                class="card-image-svg"
+                viewBox="0 0 800 450"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <defs>
+                  <linearGradient
+                    id="techGradient"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #1a1a1a; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #2d2d2d; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                  <radialGradient id="glowRed" cx="50%" cy="50%" r="50%">
+                    <stop
+                      offset="0%"
+                      style="stop-color: #ef4444; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #ef4444; stop-opacity: 0"
+                    />
+                  </radialGradient>
+                </defs>
+
+                <!-- Dark Background -->
+                <rect width="800" height="450" fill="#0a0a0a" />
+
+                <!-- Multiple screens showing code comparison -->
+                <g transform="translate(50, 60)">
+                  <!-- Screen 1 -->
+                  <rect
+                    x="0"
+                    y="0"
+                    width="200"
+                    height="300"
+                    rx="12"
+                    fill="url(#techGradient)"
+                    stroke="#444"
+                    stroke-width="2"
+                  />
+                  <rect
+                    x="10"
+                    y="10"
+                    width="180"
+                    height="280"
+                    rx="8"
+                    fill="#1a1a1a"
+                  />
+
+                  <!-- Code lines -->
+                  <rect
+                    x="20"
+                    y="25"
+                    width="100"
+                    height="8"
+                    rx="4"
+                    fill="#4ade80"
+                    opacity="0.6"
+                  />
+                  <rect
+                    x="20"
+                    y="45"
+                    width="140"
+                    height="8"
+                    rx="4"
+                    fill="#60a5fa"
+                    opacity="0.6"
+                  />
+                  <rect
+                    x="30"
+                    y="65"
+                    width="120"
+                    height="8"
+                    rx="4"
+                    fill="#f59e0b"
+                    opacity="0.6"
+                  />
+                  <rect
+                    x="30"
+                    y="85"
+                    width="90"
+                    height="8"
+                    rx="4"
+                    fill="#a78bfa"
+                    opacity="0.6"
+                  />
+                  <rect
+                    x="20"
+                    y="105"
+                    width="130"
+                    height="8"
+                    rx="4"
+                    fill="#4ade80"
+                    opacity="0.6"
+                  />
+
+                  <!-- Chart bars -->
+                  <rect
+                    x="20"
+                    y="140"
+                    width="30"
+                    height="80"
+                    rx="4"
+                    fill="#4ade80"
+                    opacity="0.4"
+                  />
+                  <rect
+                    x="60"
+                    y="180"
+                    width="30"
+                    height="40"
+                    rx="4"
+                    fill="#60a5fa"
+                    opacity="0.4"
+                  />
+                  <rect
+                    x="100"
+                    y="160"
+                    width="30"
+                    height="60"
+                    rx="4"
+                    fill="#f59e0b"
+                    opacity="0.4"
+                  />
+                  <rect
+                    x="140"
+                    y="170"
+                    width="30"
+                    height="50"
+                    rx="4"
+                    fill="#ec4899"
+                    opacity="0.4"
+                  />
+                </g>
+
+                <!-- Screen 2 -->
+                <g transform="translate(300, 60)">
+                  <rect
+                    x="0"
+                    y="0"
+                    width="200"
+                    height="300"
+                    rx="12"
+                    fill="url(#techGradient)"
+                    stroke="#444"
+                    stroke-width="2"
+                  />
+                  <rect
+                    x="10"
+                    y="10"
+                    width="180"
+                    height="280"
+                    rx="8"
+                    fill="#1a1a1a"
+                  />
+
+                  <!-- Different design option -->
+                  <circle
+                    cx="100"
+                    cy="80"
+                    r="40"
+                    fill="#3b82f6"
+                    opacity="0.3"
+                  />
+                  <rect
+                    x="30"
+                    y="140"
+                    width="140"
+                    height="12"
+                    rx="6"
+                    fill="#8b5cf6"
+                    opacity="0.5"
+                  />
+                  <rect
+                    x="30"
+                    y="165"
+                    width="140"
+                    height="12"
+                    rx="6"
+                    fill="#ec4899"
+                    opacity="0.5"
+                  />
+                  <rect
+                    x="30"
+                    y="190"
+                    width="100"
+                    height="12"
+                    rx="6"
+                    fill="#14b8a6"
+                    opacity="0.5"
+                  />
+
+                  <!-- Checkmark -->
+                  <circle cx="170" cy="30" r="15" fill="#4ade80" />
+                  <path
+                    d="M 163 30 L 168 35 L 177 25"
+                    stroke="#fff"
+                    stroke-width="2"
+                    fill="none"
+                  />
+                </g>
+
+                <!-- Screen 3 -->
+                <g transform="translate(550, 60)">
+                  <rect
+                    x="0"
+                    y="0"
+                    width="200"
+                    height="300"
+                    rx="12"
+                    fill="url(#techGradient)"
+                    stroke="#444"
+                    stroke-width="2"
+                  />
+                  <rect
+                    x="10"
+                    y="10"
+                    width="180"
+                    height="280"
+                    rx="8"
+                    fill="#1a1a1a"
+                  />
+
+                  <!-- Grid layout option -->
+                  <rect
+                    x="25"
+                    y="30"
+                    width="60"
+                    height="60"
+                    rx="8"
+                    fill="#6366f1"
+                    opacity="0.4"
+                  />
+                  <rect
+                    x="95"
+                    y="30"
+                    width="60"
+                    height="60"
+                    rx="8"
+                    fill="#ec4899"
+                    opacity="0.4"
+                  />
+                  <rect
+                    x="25"
+                    y="100"
+                    width="60"
+                    height="60"
+                    rx="8"
+                    fill="#f59e0b"
+                    opacity="0.4"
+                  />
+                  <rect
+                    x="95"
+                    y="100"
+                    width="60"
+                    height="60"
+                    rx="8"
+                    fill="#14b8a6"
+                    opacity="0.4"
+                  />
+
+                  <rect
+                    x="25"
+                    y="180"
+                    width="130"
+                    height="8"
+                    rx="4"
+                    fill="#888"
+                    opacity="0.3"
+                  />
+                  <rect
+                    x="25"
+                    y="200"
+                    width="100"
+                    height="8"
+                    rx="4"
+                    fill="#888"
+                    opacity="0.3"
+                  />
+                  <rect
+                    x="25"
+                    y="220"
+                    width="110"
+                    height="8"
+                    rx="4"
+                    fill="#888"
+                    opacity="0.3"
+                  />
+                </g>
+
+                <!-- Red accent glow -->
+                <circle
+                  cx="400"
+                  cy="380"
+                  r="60"
+                  fill="url(#glowRed)"
+                  opacity="0.4"
+                >
+                  <animate
+                    attributeName="opacity"
+                    values="0.2;0.5;0.2"
+                    dur="2s"
+                    repeatCount="indefinite"
+                  />
+                </circle>
+
+                <!-- Robotic arm suggestion -->
+                <g transform="translate(350, 320)">
+                  <rect
+                    x="0"
+                    y="0"
+                    width="100"
+                    height="15"
+                    rx="7"
+                    fill="#444"
+                    stroke="#666"
+                    stroke-width="1"
+                  />
+                  <circle cx="85" cy="7.5" r="12" fill="#ef4444">
+                    <animate
+                      attributeName="opacity"
+                      values="0.5;1;0.5"
+                      dur="1.5s"
+                      repeatCount="indefinite"
+                    />
+                  </circle>
+                </g>
+              </svg>
+            </div>
+            <h3 class="card-title">Generate & Select Best Options</h3>
+            <p class="card-description">
+              AI agents create multiple frontend designs and backend
+              architectures. Review them side-by-side, compare features and
+              performance, then select your preferred design and technical
+              stack.
+            </p>
+          </div>
+
+          <!-- Card 03: Test, Validate & Download -->
+          <div class="process-card">
+            <div class="card-number">03</div>
+            <div class="card-pagination">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot active"></span>
+            </div>
+            <div class="card-image-container">
+              <svg
+                class="card-image-svg"
+                viewBox="0 0 800 450"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <defs>
+                  <linearGradient
+                    id="dashGradient"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #0f172a; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #1e293b; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                  <filter id="glow">
+                    <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+                    <feMerge>
+                      <feMergeNode in="coloredBlur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                </defs>
+
+                <!-- Background -->
+                <rect width="800" height="450" fill="url(#dashGradient)" />
+
+                <!-- Main Dashboard Screen -->
+                <g transform="translate(100, 50)">
+                  <rect
+                    x="0"
+                    y="0"
+                    width="600"
+                    height="350"
+                    rx="16"
+                    fill="#0a0a0a"
+                    stroke="#333"
+                    stroke-width="2"
+                  />
+                  <rect
+                    x="8"
+                    y="8"
+                    width="584"
+                    height="334"
+                    rx="12"
+                    fill="#0f1419"
+                  />
+
+                  <!-- Header with metrics -->
+                  <rect
+                    x="25"
+                    y="25"
+                    width="550"
+                    height="60"
+                    rx="12"
+                    fill="#1a1f2e"
+                    opacity="0.8"
+                  />
+
+                  <!-- Metric Cards -->
+                  <g transform="translate(40, 35)">
+                    <text
+                      x="0"
+                      y="15"
+                      fill="#888"
+                      font-size="12"
+                      font-family="Arial"
+                    >
+                      Tests Passed
+                    </text>
+                    <text
+                      x="0"
+                      y="38"
+                      fill="#4ade80"
+                      font-size="24"
+                      font-weight="bold"
+                      filter="url(#glow)"
+                    >
+                      100%
+                    </text>
+                  </g>
+
+                  <g transform="translate(200, 35)">
+                    <text
+                      x="0"
+                      y="15"
+                      fill="#888"
+                      font-size="12"
+                      font-family="Arial"
+                    >
+                      Code Quality
+                    </text>
+                    <text
+                      x="0"
+                      y="38"
+                      fill="#60a5fa"
+                      font-size="24"
+                      font-weight="bold"
+                      filter="url(#glow)"
+                    >
+                      A+
+                    </text>
+                  </g>
+
+                  <g transform="translate(350, 35)">
+                    <text
+                      x="0"
+                      y="15"
+                      fill="#888"
+                      font-size="12"
+                      font-family="Arial"
+                    >
+                      Build Time
+                    </text>
+                    <text
+                      x="0"
+                      y="38"
+                      fill="#f59e0b"
+                      font-size="24"
+                      font-weight="bold"
+                      filter="url(#glow)"
+                    >
+                      2.3s
+                    </text>
+                  </g>
+
+                  <g transform="translate(500, 35)">
+                    <circle
+                      cx="15"
+                      cy="25"
+                      r="15"
+                      fill="#4ade80"
+                      opacity="0.2"
+                    />
+                    <path
+                      d="M 10 25 L 13 28 L 20 20"
+                      stroke="#4ade80"
+                      stroke-width="2"
+                      fill="none"
+                      filter="url(#glow)"
+                    />
+                  </g>
+
+                  <!-- Progress bars / File list -->
+                  <g transform="translate(25, 110)">
+                    <rect
+                      x="0"
+                      y="0"
+                      width="250"
+                      height="200"
+                      rx="10"
+                      fill="#1a1f2e"
+                      opacity="0.6"
+                    />
+
+                    <!-- File items with checkmarks -->
+                    <g transform="translate(15, 20)">
+                      <circle cx="8" cy="8" r="6" fill="#4ade80" />
+                      <path
+                        d="M 5 8 L 7 10 L 11 6"
+                        stroke="#0a0a0a"
+                        stroke-width="1.5"
+                        fill="none"
+                      />
+                      <text
+                        x="25"
+                        y="12"
+                        fill="#e0e0e0"
+                        font-size="12"
+                        font-family="monospace"
+                      >
+                        index.html
+                      </text>
+                    </g>
+
+                    <g transform="translate(15, 50)">
+                      <circle cx="8" cy="8" r="6" fill="#4ade80" />
+                      <path
+                        d="M 5 8 L 7 10 L 11 6"
+                        stroke="#0a0a0a"
+                        stroke-width="1.5"
+                        fill="none"
+                      />
+                      <text
+                        x="25"
+                        y="12"
+                        fill="#e0e0e0"
+                        font-size="12"
+                        font-family="monospace"
+                      >
+                        styles.css
+                      </text>
+                    </g>
+
+                    <g transform="translate(15, 80)">
+                      <circle cx="8" cy="8" r="6" fill="#4ade80" />
+                      <path
+                        d="M 5 8 L 7 10 L 11 6"
+                        stroke="#0a0a0a"
+                        stroke-width="1.5"
+                        fill="none"
+                      />
+                      <text
+                        x="25"
+                        y="12"
+                        fill="#e0e0e0"
+                        font-size="12"
+                        font-family="monospace"
+                      >
+                        script.js
+                      </text>
+                    </g>
+
+                    <g transform="translate(15, 110)">
+                      <circle cx="8" cy="8" r="6" fill="#4ade80" />
+                      <path
+                        d="M 5 8 L 7 10 L 11 6"
+                        stroke="#0a0a0a"
+                        stroke-width="1.5"
+                        fill="none"
+                      />
+                      <text
+                        x="25"
+                        y="12"
+                        fill="#e0e0e0"
+                        font-size="12"
+                        font-family="monospace"
+                      >
+                        api/server.js
+                      </text>
+                    </g>
+
+                    <g transform="translate(15, 140)">
+                      <circle cx="8" cy="8" r="6" fill="#4ade80" />
+                      <path
+                        d="M 5 8 L 7 10 L 11 6"
+                        stroke="#0a0a0a"
+                        stroke-width="1.5"
+                        fill="none"
+                      />
+                      <text
+                        x="25"
+                        y="12"
+                        fill="#e0e0e0"
+                        font-size="12"
+                        font-family="monospace"
+                      >
+                        README.md
+                      </text>
+                    </g>
+                  </g>
+
+                  <!-- Live preview/chart area -->
+                  <g transform="translate(300, 110)">
+                    <rect
+                      x="0"
+                      y="0"
+                      width="275"
+                      height="200"
+                      rx="10"
+                      fill="#1a1f2e"
+                      opacity="0.6"
+                    />
+
+                    <!-- Terminal-like output -->
+                    <text
+                      x="15"
+                      y="25"
+                      fill="#4ade80"
+                      font-size="11"
+                      font-family="monospace"
+                    >
+                      $ npm run build
+                    </text>
+                    <text
+                      x="15"
+                      y="45"
+                      fill="#888"
+                      font-size="10"
+                      font-family="monospace"
+                    >
+                      ✓ Compiled successfully
+                    </text>
+                    <text
+                      x="15"
+                      y="60"
+                      fill="#888"
+                      font-size="10"
+                      font-family="monospace"
+                    >
+                      ✓ Optimized bundle
+                    </text>
+                    <text
+                      x="15"
+                      y="75"
+                      fill="#888"
+                      font-size="10"
+                      font-family="monospace"
+                    >
+                      ✓ Generated files
+                    </text>
+
+                    <!-- Download icon -->
+                    <g transform="translate(120, 110)">
+                      <circle cx="0" cy="0" r="35" fill="#4ade80" opacity="0.2">
+                        <animate
+                          attributeName="r"
+                          values="35;38;35"
+                          dur="2s"
+                          repeatCount="indefinite"
+                        />
+                      </circle>
+                      <path
+                        d="M -10 -8 L 10 -8 M 0 -8 L 0 8 M -6 2 L 0 8 L 6 2"
+                        stroke="#4ade80"
+                        stroke-width="2.5"
+                        fill="none"
+                        stroke-linecap="round"
+                        filter="url(#glow)"
+                      />
+                      <rect
+                        x="-12"
+                        y="10"
+                        width="24"
+                        height="3"
+                        rx="1.5"
+                        fill="#4ade80"
+                        filter="url(#glow)"
+                      />
+                    </g>
+                  </g>
+                </g>
+
+                <!-- Ambient particles -->
+                <circle cx="50" cy="100" r="3" fill="#4ade80" opacity="0.4">
+                  <animate
+                    attributeName="cy"
+                    values="100;80;100"
+                    dur="3s"
+                    repeatCount="indefinite"
+                  />
+                </circle>
+                <circle cx="750" cy="350" r="4" fill="#60a5fa" opacity="0.4">
+                  <animate
+                    attributeName="cy"
+                    values="350;330;350"
+                    dur="4s"
+                    repeatCount="indefinite"
+                  />
+                </circle>
+              </svg>
+            </div>
+            <h3 class="card-title">Receive Production-Ready Code</h3>
+            <p class="card-description">
+              Test engineer validates all functionality and responsiveness.
+              Engineering lead ensures code quality. Download your complete,
+              organized, and deployment-ready frontend and backend files with
+              full documentation.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section with Vertical Scroll Carousel -->
+    <section class="features-scroll-section">
+      <div class="features-header">
+        <div class="badge">
+          <svg width="16" height="16" viewBox="0 0 16 16">
+            <path
+              d="M8 2 L10 6 L14 6 L11 9 L12 13 L8 10 L4 13 L5 9 L2 6 L6 6 Z"
+              fill="currentColor"
+            />
+          </svg>
+          <span>FEATURES</span>
+        </div>
+        <h2 class="features-main-title">All features in 1 tool</h2>
+        <p class="features-main-subtitle">
+          Discover features that simplify workflows & grow your business.
+        </p>
+      </div>
+
+      <div class="scroll-features-container">
+        <div class="features-content">
+          <div class="feature-text-sections">
+            <!-- Section 1 -->
+            <div class="feature-section" data-section="0">
+              <h3 class="feature-section-title">
+                AI Agents Build Your Website
+              </h3>
+              <p class="feature-section-description">
+                Multiple specialized AI agents—frontend creators, backend
+                engineers, test specialists, and an engineering lead—collaborate
+                in real-time to build your complete website.
+              </p>
+            </div>
+
+            <!-- Section 2 -->
+            <div class="feature-section" data-section="1">
+              <h3 class="feature-section-title">
+                Generate Multiple Options, Pick the Best
+              </h3>
+              <p class="feature-section-description">
+                Our AI creates multiple frontend designs and backend
+                architectures. Review each version side-by-side, compare
+                features, and select the one that fits your vision perfectly.
+              </p>
+            </div>
+
+            <!-- Section 3 -->
+            <div class="feature-section" data-section="2">
+              <h3 class="feature-section-title">
+                Automated Testing & Validation
+              </h3>
+              <p class="feature-section-description">
+                Test engineer agents validate every component, check
+                responsiveness, verify functionality, and ensure your code is
+                production-ready before delivery.
+              </p>
+            </div>
+
+            <!-- Section 4 -->
+            <div class="feature-section" data-section="3">
+              <h3 class="feature-section-title">
+                Download Production-Ready Files
+              </h3>
+              <p class="feature-section-description">
+                Get clean, organized frontend and backend code files. Fully
+                commented, properly structured, and ready to deploy to any
+                hosting platform.
+              </p>
+            </div>
+          </div>
+
+          <div class="feature-visual-container">
+            <div class="feature-visual active" data-visual="0">
+              <div class="visual-content terminal-view">
+                <div class="terminal-header">
+                  <div class="terminal-dots">
+                    <span></span><span></span><span></span>
+                  </div>
+                  <span class="terminal-title">AI Agents Workspace</span>
+                </div>
+                <div class="terminal-body">
+                  <div class="agent-task">
+                    <span class="agent-name">Frontend Agent:</span>
+                    <div class="progress-bar">
+                      <div class="progress" style="width: 75%"></div>
+                    </div>
+                    <span class="task-status">Building components...</span>
+                  </div>
+                  <div class="agent-task">
+                    <span class="agent-name">Backend Agent:</span>
+                    <div class="progress-bar">
+                      <div class="progress" style="width: 60%"></div>
+                    </div>
+                    <span class="task-status">Setting up API routes...</span>
+                  </div>
+                  <div class="agent-task">
+                    <span class="agent-name">Test Agent:</span>
+                    <div class="progress-bar">
+                      <div class="progress" style="width: 40%"></div>
+                    </div>
+                    <span class="task-status">Writing test cases...</span>
+                  </div>
+                  <div class="agent-task">
+                    <span class="agent-name">Lead Agent:</span>
+                    <div class="progress-bar">
+                      <div class="progress" style="width: 85%"></div>
+                    </div>
+                    <span class="task-status">Coordinating tasks...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="feature-visual" data-visual="1">
+              <div class="visual-content comparison-view">
+                <div class="compare-side before">
+                  <div class="compare-label">BEFORE</div>
+                  <div class="metrics-list">
+                    <div class="metric-item">
+                      <div class="metric-name">Development Time</div>
+                      <div class="metric-value">8 weeks</div>
+                    </div>
+                    <div class="metric-item">
+                      <div class="metric-name">Code Quality</div>
+                      <div class="metric-value">Manual</div>
+                    </div>
+                    <div class="metric-item">
+                      <div class="metric-name">Testing</div>
+                      <div class="metric-value">Limited</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="compare-side after">
+                  <div class="compare-label">AFTER</div>
+                  <div class="metrics-list">
+                    <div class="metric-item">
+                      <div class="metric-name">Development Time</div>
+                      <div class="metric-value">2 days</div>
+                    </div>
+                    <div class="metric-item">
+                      <div class="metric-name">Code Quality</div>
+                      <div class="metric-value">AI-Optimized</div>
+                    </div>
+                    <div class="metric-item">
+                      <div class="metric-name">Testing</div>
+                      <div class="metric-value">Complete</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="feature-visual" data-visual="2">
+              <div class="visual-content testing-view">
+                <div class="testing-header">
+                  <span class="test-icon">✓</span> Test Results
+                </div>
+                <div class="test-results">
+                  <div class="test-item passed">
+                    <span class="test-check">✓</span>
+                    <span class="test-name">Component Rendering</span>
+                    <span class="test-time">125ms</span>
+                  </div>
+                  <div class="test-item passed">
+                    <span class="test-check">✓</span>
+                    <span class="test-name">API Integration</span>
+                    <span class="test-time">89ms</span>
+                  </div>
+                  <div class="test-item passed">
+                    <span class="test-check">✓</span>
+                    <span class="test-name">Responsive Layout</span>
+                    <span class="test-time">156ms</span>
+                  </div>
+                  <div class="test-item passed">
+                    <span class="test-check">✓</span>
+                    <span class="test-name">Database Connection</span>
+                    <span class="test-time">203ms</span>
+                  </div>
+                </div>
+                <div class="test-summary">All tests passed • 4/4</div>
+              </div>
+            </div>
+
+            <div class="feature-visual" data-visual="3">
+              <div class="visual-content files-view">
+                <div class="files-header">📁 Project Structure</div>
+                <div class="file-tree">
+                  <div class="file-item folder">📁 frontend/</div>
+                  <div class="file-item file indent-1">📄 index.html</div>
+                  <div class="file-item file indent-1">📄 styles.css</div>
+                  <div class="file-item file indent-1">📄 app.js</div>
+                  <div class="file-item folder">📁 backend/</div>
+                  <div class="file-item file indent-1">📄 server.js</div>
+                  <div class="file-item file indent-1">📄 routes.js</div>
+                  <div class="file-item file indent-1">📄 database.js</div>
+                  <div class="file-item folder">📁 tests/</div>
+                </div>
+                <button class="download-btn">⬇ Download All Files</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Proven Impact & Results Section -->
+    <section class="projects-section">
+      <div class="projects-container">
+        <div class="projects-header">
+          <div class="projects-badge">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+              <path d="M3 9h18M9 21V9"></path>
+            </svg>
+            <span>PROJECTS</span>
+          </div>
+          <h2 class="projects-title">Proven Impact & Results</h2>
+          <p class="projects-subtitle">
+            Explore real websites built by our AI system with measurable
+            business impact
+          </p>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="project-tabs">
+          <button class="project-tab active" data-project="0">PROJECT 1</button>
+          <button class="project-tab" data-project="1">PROJECT 2</button>
+          <button class="project-tab" data-project="2">PROJECT 3</button>
+          <button class="project-tab" data-project="3">PROJECT 4</button>
+        </div>
+
+        <!-- Carousel Container -->
+        <div class="projects-carousel">
+          <!-- Project 1: Medicare -->
+          <div class="project-slide active" data-slide="0">
+            <div class="project-content">
+              <div class="project-image-container">
+                <img src="medicare.png" alt="Medicare Medical Website" />
+              </div>
+
+              <div class="project-info">
+                <div class="project-number">01</div>
+                <h3 class="project-title">
+                  Medicare — AI-Powered Medical Website
+                </h3>
+                <p class="project-description">
+                  We built a complete healthcare website with appointment
+                  booking, patient portal, telemedicine integration, and AI
+                  symptom checker. Clean interface with HIPAA-compliant backend
+                  architecture.
+                </p>
+
+                <div class="metrics-grid">
+                  <div class="metric-card">
+                    <div class="metric-percentage" data-target="45">0%</div>
+                    <div class="metric-label">Faster appointment booking</div>
+                  </div>
+                  <div class="metric-card">
+                    <div class="metric-percentage" data-target="35">0%</div>
+                    <div class="metric-label">Reduced patient wait time</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Project 2: Stellaria -->
+          <div class="project-slide" data-slide="1">
+            <div class="project-content">
+              <div class="project-image-container">
+                <img src="stelleria.png" alt="Stellaria E-Commerce Platform" />
+              </div>
+
+              <div class="project-info">
+                <div class="project-number">02</div>
+                <h3 class="project-title">
+                  Stellaria — Smart E-Commerce Platform
+                </h3>
+                <p class="project-description">
+                  Created a full-stack e-commerce website with AI-powered
+                  product recommendations, dynamic inventory management, secure
+                  payment gateway integration, and real-time analytics
+                  dashboard.
+                </p>
+
+                <div class="metrics-grid">
+                  <div class="metric-card">
+                    <div class="metric-percentage" data-target="52">0%</div>
+                    <div class="metric-label">Increase in conversion rate</div>
+                  </div>
+                  <div class="metric-card">
+                    <div class="metric-percentage" data-target="28">0%</div>
+                    <div class="metric-label">Higher average order value</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Project 3: Workflow HR -->
+          <div class="project-slide" data-slide="2">
+            <div class="project-content">
+              <div class="project-image-container">
+                <img
+                  src="workflowhr automation.png"
+                  alt="Workflow HR Management System"
+                />
+              </div>
+
+              <div class="project-info">
+                <div class="project-number">03</div>
+                <h3 class="project-title">
+                  Workflow HR — Automated HR Management System
+                </h3>
+                <p class="project-description">
+                  Developed an AI-powered HR workflow automation platform
+                  handling employee onboarding, leave management, payroll
+                  integration, and automated compliance reporting with
+                  intelligent chatbot support.
+                </p>
+
+                <div class="metrics-grid">
+                  <div class="metric-card">
+                    <div class="metric-percentage" data-target="60">0%</div>
+                    <div class="metric-label">Saved admin time</div>
+                  </div>
+                  <div class="metric-card">
+                    <div class="metric-percentage" data-target="42">0%</div>
+                    <div class="metric-label">Faster employee onboarding</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Project 4: FitLife -->
+          <div class="project-slide" data-slide="3">
+            <div class="project-content">
+              <div class="project-image-container">
+                <img src="fitness.png" alt="FitLife Fitness Platform" />
+              </div>
+
+              <div class="project-info">
+                <div class="project-number">04</div>
+                <h3 class="project-title">
+                  FitLife — AI Fitness & Wellness Platform
+                </h3>
+                <p class="project-description">
+                  Built a comprehensive fitness website with personalized
+                  workout plans, nutrition tracking, AI-powered form correction,
+                  progress analytics, and integrated video streaming for guided
+                  exercises.
+                </p>
+
+                <div class="metrics-grid">
+                  <div class="metric-card">
+                    <div class="metric-percentage" data-target="38">0%</div>
+                    <div class="metric-label">Improved user engagement</div>
+                  </div>
+                  <div class="metric-card">
+                    <div class="metric-percentage" data-target="55">0%</div>
+                    <div class="metric-label">
+                      Higher workout completion rate
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Comparison Section -->
+    <section class="comparison-section">
+      <div class="comparison-container">
+        <div class="comparison-header">
+          <div class="comparison-badge">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M12 3v18M3 12h18M8 8l-4 4 4 4M16 8l4 4-4 4"></path>
+            </svg>
+            <span>COMPARISON</span>
+          </div>
+          <h2 class="comparison-title">Why Choose Our Platform</h2>
+          <p class="comparison-subtitle">
+            See how our AI outperforms generic tools with specialized website
+            building capabilities
+          </p>
+        </div>
+
+        <div class="comparison-cards-grid">
+          <!-- Left Card: Your Platform -->
+          <div class="comparison-card left">
+            <div class="card-header premium">
+              <div class="platform-logo">
+                <svg width="60" height="60" viewBox="0 0 100 100" fill="none">
+                  <rect
+                    width="100"
+                    height="100"
+                    rx="20"
+                    fill="url(#platformGradient)"
+                  />
+                  <path
+                    d="M30 50 L45 65 L70 35"
+                    stroke="white"
+                    stroke-width="8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <defs>
+                    <linearGradient
+                      id="platformGradient"
+                      x1="0"
+                      y1="0"
+                      x2="100"
+                      y2="100"
+                    >
+                      <stop offset="0%" stop-color="#000000" />
+                      <stop offset="100%" stop-color="#333333" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+              <h3 class="platform-name">AIDevs Platform</h3>
+              <span class="platform-badge premium-badge">Premium</span>
+            </div>
+
+            <div class="features-list">
+              <div class="feature-item">
+                <div class="feature-icon check">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" fill="#d1fae5" />
+                    <path
+                      d="M8 12 L11 15 L16 9"
+                      stroke="#10b981"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </div>
+                <div class="feature-text">
+                  <strong>Interactive Design Approval</strong>
+                  <p>
+                    Asks you to review colors, layouts, and styling
+                    choices—ensuring the design matches your vision
+                  </p>
+                </div>
+              </div>
+
+              <div class="feature-item">
+                <div class="feature-icon check">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" fill="#d1fae5" />
+                    <path
+                      d="M8 12 L11 15 L16 9"
+                      stroke="#10b981"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </div>
+                <div class="feature-text">
+                  <strong>Multiple Design Options</strong>
+                  <p>
+                    Generates 3-5 different frontend designs for you to compare
+                    and choose from
+                  </p>
+                </div>
+              </div>
+
+              <div class="feature-item">
+                <div class="feature-icon check">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" fill="#d1fae5" />
+                    <path
+                      d="M8 12 L11 15 L16 9"
+                      stroke="#10b981"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </div>
+                <div class="feature-text">
+                  <strong>Iterative Refinement</strong>
+                  <p>
+                    Continuously refines based on your feedback until perfect
+                  </p>
+                </div>
+              </div>
+
+              <div class="feature-item">
+                <div class="feature-icon check">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" fill="#d1fae5" />
+                    <path
+                      d="M8 12 L11 15 L16 9"
+                      stroke="#10b981"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </div>
+                <div class="feature-text">
+                  <strong>Automated Workflows</strong>
+                  <p>
+                    Multi-agent system handles frontend, backend, and testing
+                    simultaneously
+                  </p>
+                </div>
+              </div>
+
+              <div class="feature-item">
+                <div class="feature-icon check">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" fill="#d1fae5" />
+                    <path
+                      d="M8 12 L11 15 L16 9"
+                      stroke="#10b981"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </div>
+                <div class="feature-text">
+                  <strong>Personalized AI-Driven Strategies</strong>
+                  <p>
+                    Tailored to your specific business needs and requirements
+                  </p>
+                </div>
+              </div>
+
+              <div class="feature-item">
+                <div class="feature-icon check">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" fill="#d1fae5" />
+                    <path
+                      d="M8 12 L11 15 L16 9"
+                      stroke="#10b981"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </div>
+                <div class="feature-text">
+                  <strong>Data-Backed, Real-Time Insights</strong>
+                  <p>Live collaboration tracking and progress updates</p>
+                </div>
+              </div>
+
+              <div class="feature-item">
+                <div class="feature-icon check">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" fill="#d1fae5" />
+                    <path
+                      d="M8 12 L11 15 L16 9"
+                      stroke="#10b981"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </div>
+                <div class="feature-text">
+                  <strong>Scalable AI Systems</strong>
+                  <p>
+                    Backend architecture designed for growth and performance
+                  </p>
+                </div>
+              </div>
+
+              <div class="feature-item">
+                <div class="feature-icon check">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" fill="#d1fae5" />
+                    <path
+                      d="M8 12 L11 15 L16 9"
+                      stroke="#10b981"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </div>
+                <div class="feature-text">
+                  <strong>Production-Ready Code</strong>
+                  <p>Download organized, commented, deployment-ready files</p>
+                </div>
+              </div>
+            </div>
+
+            <button class="cta-button premium-cta">
+              <span>Get Started</span>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Right Card: Others -->
+          <div class="comparison-card right">
+            <div class="card-header basic">
+              <div class="platform-logo">
+                <svg width="60" height="60" viewBox="0 0 100 100" fill="none">
+                  <rect width="100" height="100" rx="20" fill="#e5e7eb" />
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="20"
+                    stroke="#9ca3af"
+                    stroke-width="4"
+                    fill="none"
+                  />
+                  <path
+                    d="M50 35 L50 50 L60 60"
+                    stroke="#9ca3af"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </div>
+              <h3 class="platform-name">Others (ChatGPT/Claude)</h3>
+              <span class="platform-badge basic-badge">Basic</span>
+            </div>
+
+            <div class="features-list">
+              <div class="feature-item">
+                <div class="feature-icon cross">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" fill="#fee2e2" />
+                    <path
+                      d="M15 9 L9 15 M9 9 L15 15"
+                      stroke="#ef4444"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </div>
+                <div class="feature-text">
+                  <strong>Manual Workflows</strong>
+                  <p>You have to manually describe every detail repeatedly</p>
+                </div>
+              </div>
+
+              <div class="feature-item">
+                <div class="feature-icon cross">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" fill="#fee2e2" />
+                    <path
+                      d="M15 9 L9 15 M9 9 L15 15"
+                      stroke="#ef4444"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </div>
+                <div class="feature-text">
+                  <strong>Generic, One-Size-Fits-All Solutions</strong>
+                  <p>
+                    Cannot generate multiple design variations to choose from
+                  </p>
+                </div>
+              </div>
+
+              <div class="feature-item">
+                <div class="feature-icon cross">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" fill="#fee2e2" />
+                    <path
+                      d="M15 9 L9 15 M9 9 L15 15"
+                      stroke="#ef4444"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </div>
+                <div class="feature-text">
+                  <strong>No Design Review Process</strong>
+                  <p>
+                    Doesn't ask if you like the colors, fonts, or layout choices
+                  </p>
+                </div>
+              </div>
+
+              <div class="feature-item">
+                <div class="feature-icon cross">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" fill="#fee2e2" />
+                    <path
+                      d="M15 9 L9 15 M9 9 L15 15"
+                      stroke="#ef4444"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </div>
+                <div class="feature-text">
+                  <strong>Decision-Making Based on Guesswork</strong>
+                  <p>No iterative feedback loop for refinements</p>
+                </div>
+              </div>
+
+              <div class="feature-item">
+                <div class="feature-icon cross">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" fill="#fee2e2" />
+                    <path
+                      d="M15 9 L9 15 M9 9 L15 15"
+                      stroke="#ef4444"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </div>
+                <div class="feature-text">
+                  <strong>Lacks Scalability</strong>
+                  <p>
+                    Single-response format, no coordinated multi-agent workflow
+                  </p>
+                </div>
+              </div>
+
+              <div class="feature-item">
+                <div class="feature-icon cross">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" fill="#fee2e2" />
+                    <path
+                      d="M15 9 L9 15 M9 9 L15 15"
+                      stroke="#ef4444"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </div>
+                <div class="feature-text">
+                  <strong>No Testing Validation</strong>
+                  <p>You must manually test and debug everything</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section">
+      <div class="faq-container">
+        <div class="faq-header">
+          <div class="faq-badge">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <span>FAQS</span>
+          </div>
+          <h2 class="faq-title">Questions? Answers!</h2>
+          <p class="faq-subtitle">
+            Find quick answers to the most common questions about our AI website
+            builder
+          </p>
+        </div>
+
+        <div class="faq-items">
+          <!-- FAQ Item 1 -->
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>How does your AI website builder work?</span>
+              <svg
+                class="chevron"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+            <div class="faq-answer">
+              <p>
+                Simply describe your website requirements in plain English. Our
+                multi-agent AI system generates multiple frontend designs and
+                backend architectures. You review the options, select your
+                favorites, and provide feedback. Our AI iteratively refines the
+                code until you're completely satisfied, then delivers
+                production-ready, downloadable files.
+              </p>
+            </div>
+          </div>
+
+          <!-- FAQ Item 2 -->
+          <div class="faq-item">
+            <div class="faq-question">
+              <span
+                >What makes your platform different from ChatGPT or
+                Claude?</span
+              >
+              <svg
+                class="chevron"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+            <div class="faq-answer">
+              <p>
+                Unlike generic AI chatbots, we specialize in full-stack website
+                development. We generate multiple design variations and actively
+                ask for your approval on colors, layouts, fonts, and styling
+                choices. Our multi-agent system coordinates frontend creators,
+                backend engineers, test specialists, and an engineering lead—all
+                working together to build, validate, and deliver your complete
+                website.
+              </p>
+            </div>
+          </div>
+
+          <!-- FAQ Item 3 -->
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>Do I need coding experience to use your platform?</span>
+              <svg
+                class="chevron"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+            <div class="faq-answer">
+              <p>
+                Absolutely not! Our platform is designed for everyone,
+                regardless of technical background. Simply describe what you
+                want in plain English, and our AI handles all the complexity. We
+                explain every step in simple, actionable terms and provide fully
+                commented, organized code that's ready to deploy.
+              </p>
+            </div>
+          </div>
+
+          <!-- FAQ Item 4 -->
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>How long does it take to build a website?</span>
+              <svg
+                class="chevron"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+            <div class="faq-answer">
+              <p>
+                Most projects are completed within 24-48 hours, depending on
+                complexity. Our AI agents work simultaneously on frontend,
+                backend, and testing, significantly reducing development time.
+                Simple landing pages can be ready in hours, while complex
+                full-stack applications with databases and APIs typically take
+                1-2 days.
+              </p>
+            </div>
+          </div>
+
+          <!-- FAQ Item 5 -->
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>Can I customize the design after it's generated?</span>
+              <svg
+                class="chevron"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+            <div class="faq-answer">
+              <p>
+                Yes! Our iterative refinement process allows unlimited
+                revisions. If you don't like the colors, layouts, or any design
+                element, simply tell us and we'll regenerate new options. You
+                can request changes to fonts, spacing, components, features, or
+                entire page sections until the design perfectly matches your
+                vision.
+              </p>
+            </div>
+          </div>
+
+          <!-- FAQ Item 6 -->
+          <div class="faq-item">
+            <div class="faq-question">
+              <span
+                >What technologies do you use for frontend and backend?</span
+              >
+              <svg
+                class="chevron"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+            <div class="faq-answer">
+              <p>
+                For frontend, we generate modern React, Vue.js, or vanilla
+                HTML/CSS/JavaScript based on your preferences. Backend options
+                include Node.js with Express, Python with Flask/Django, or
+                serverless architectures using AWS Lambda. We also set up
+                databases (PostgreSQL, MongoDB, MySQL) and implement secure API
+                endpoints with authentication.
+              </p>
+            </div>
+          </div>
+
+          <!-- FAQ Item 7 -->
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>Is my data safe when using your platform?</span>
+              <svg
+                class="chevron"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+            <div class="faq-answer">
+              <p>
+                Absolutely. We take security seriously. All data is encrypted in
+                transit and at rest. We don't store your project details longer
+                than necessary, and you retain full ownership of all generated
+                code and content. Our AI agents operate in isolated
+                environments, and we comply with industry-standard security
+                practices.
+              </p>
+            </div>
+          </div>
+
+          <!-- FAQ Item 8 -->
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>Do I get the source code and files?</span>
+              <svg
+                class="chevron"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+            <div class="faq-answer">
+              <p>
+                Yes! You receive complete, organized source code files for both
+                frontend and backend. Everything is fully commented, properly
+                structured, and deployment-ready. Files include HTML, CSS,
+                JavaScript, server code, database schemas, API documentation,
+                and deployment instructions—all downloadable as a ZIP package.
+              </p>
+            </div>
+          </div>
+
+          <!-- FAQ Item 9 -->
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>Can your AI build e-commerce websites?</span>
+              <svg
+                class="chevron"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+            <div class="faq-answer">
+              <p>
+                Definitely! We specialize in e-commerce platforms with product
+                catalogs, shopping carts, secure payment gateway integration
+                (Stripe, PayPal), inventory management, order tracking, and
+                admin dashboards. Our AI can build complete online stores with
+                user authentication, checkout flows, and real-time analytics.
+              </p>
+            </div>
+          </div>
+
+          <!-- FAQ Item 10 -->
+          <div class="faq-item">
+            <div class="faq-question">
+              <span>What kind of support do you provide after delivery?</span>
+              <svg
+                class="chevron"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+            <div class="faq-answer">
+              <p>
+                After delivery, you receive comprehensive documentation
+                explaining your codebase. If you encounter issues or need
+                modifications, our engineering lead agent can assist with
+                debugging and enhancements. We also provide deployment guides
+                for popular hosting platforms like Vercel, Netlify, AWS, and
+                Heroku.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Message -->
+        <div class="faq-contact">
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+            ></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+          <p>
+            Feel free to mail us for any enquiries :
+            <a href="mailto:udayeaswar24@gmail.com">udayeaswar24@gmail.com</a>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+      <div class="footer-content">
+        <!-- Footer Logo and Brand -->
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle
+                cx="50"
+                cy="50"
+                r="45"
+                fill="#333"
+                stroke="#666"
+                stroke-width="2"
+              />
+              <path
+                d="M30 40 L50 30 L70 40 L50 50 Z M50 50 L70 60 L50 70 L30 60 Z"
+                fill="white"
+              />
+            </svg>
+          </div>
+          <h2 class="footer-brand-name">
+            AI<span class="footer-brand-ai">DEVS</span>
+          </h2>
+          <p class="footer-tagline">
+            Custom AI solutions, built for the innovators of tomorrow
+          </p>
+        </div>
+
+        <!-- Footer Navigation -->
+        <nav class="footer-nav">
+          <a href="#features">Features</a>
+          <a href="#services">Services</a>
+          <a href="#updates">Updates</a>
+          <a href="#contact">Contact</a>
+        </nav>
+
+        <!-- LinkedIn Icon -->
+        <a
+          href="https://www.linkedin.com/in/uday-easwar-22290a27a/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="linkedin-icon"
+          aria-label="LinkedIn Profile"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"
+            />
+          </svg>
+        </a>
+
+        <!-- Copyright -->
+        <p class="copyright">aidevs@2026 developed by udayeaswar</p>
+      </div>
+    </footer>
+
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="index.js"></script>
+  </body>
+</html>
