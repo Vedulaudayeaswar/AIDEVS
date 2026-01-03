@@ -1,358 +1,179 @@
 # 🤖 AIDevs - AI-Powered Full-Stack Website Builder
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![React](https://img.shields.io/badge/React-18-61dafb.svg)
-![Flask](https://img.shields.io/badge/Flask-3.0-000000.svg)
-![Python](https://img.shields.io/badge/Python-3.8+-3776ab.svg)
+Multi-agent AI system that generates complete websites with both frontend and backend code, automatically integrated and ready to deploy.
 
-> Transform your ideas into production-ready websites through conversational AI. No coding required.
+## 🌟 Features
 
-[Live Demo](#) | [Documentation](#documentation) | [Report Bug](#) | [Request Feature](#)
+- **Multi-Agent Architecture** - Lead agent, frontend, backend, and testing agents work together
+- **Full-Stack Generation** - Generates HTML/CSS/JS frontend + Flask backend API
+- **User Authentication** - Secure JWT-based auth with bcrypt password hashing
+- **Personal API Keys** - Each user can use their own Groq API key
+- **Real-time Preview** - See your website as it's being built
+- **Downloadable Package** - Get complete ZIP with frontend, backend, and tests
+- **Production Ready** - Deploy to Render, Heroku, or any cloud platform
 
----
+## 🚀 Quick Deploy to Render
 
-## 📋 Table of Contents
+**Choose your guide:**
 
-- [About The Project](#about-the-project)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-  - [Environment Setup](#environment-setup)
-- [Usage](#usage)
-- [Deployment](#deployment)
-- [Architecture](#architecture)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
+- 🏃 **[Quick Start (10 min)](QUICK_START_RENDER.md)** - Fastest way to deploy
+- 📋 **[Deployment Checklist](DEPLOYMENT_CHECKLIST.md)** - Step-by-step with troubleshooting
+- 📚 **[Full Documentation](RENDER_DEPLOYMENT.md)** - Complete deployment guide
 
----
-
-## 🎯 About The Project
-
-**AIDevs** is an intelligent web development platform that uses multi-agent AI to build complete full-stack websites through natural conversation. Simply describe your vision, and our AI agents guide you through creating professional-grade websites with modern designs, backend APIs, and comprehensive tests.
-
-### **How It Works:**
-
-1. **Register** with your Groq API key (securely encrypted and stored)
-2. **Chat** with AI agents about your website idea
-3. **Build** sections step-by-step (Header → Hero → Features → Footer)
-4. **Preview** your website in real-time
-5. **Download** complete full-stack project (HTML/CSS/JS + Flask backend + Tests)
-6. **Deploy** with included instructions
-
----
-
-## ✨ Features
-
-### **🤖 AI-Powered Generation**
-
-- **Multi-Agent System**: Lead, Frontend, Backend, and Test agents work together
-- **Conversational UI**: Natural language interactions with contextual suggestions
-- **Intelligent Design**: Framer.ai-quality aesthetics with glassmorphism, gradients, animations
-- **RAG Context**: Uses conversation history for personalized recommendations
-
-### **🔐 Secure Authentication**
-
-- JWT token-based authentication (24-hour sessions)
-- bcrypt password hashing
-- Fernet-encrypted API key storage
-- Per-user API key management
-
-### **⚡ High Performance**
-
-- ThreadPoolExecutor with 10 concurrent workers
-- Multi-threaded request handling
-- Event-driven architecture (Gunicorn + Gevent)
-- Handles 1000+ concurrent connections
-
-### **🎨 Modern Frontend**
-
-- React 18 with Three.js animations
-- Responsive, mobile-first design
-- Real-time preview panel
-- Glassmorphism and gradient effects
-
-### **📦 Complete Project Output**
-
-- Production-ready HTML/CSS/JavaScript
-- Flask backend with RESTful API
-- Contact/Subscribe endpoints
-- Comprehensive test suite
-- Deployment instructions
-
----
-
-## 🛠️ Tech Stack
-
-### **Frontend**
-
-- [React 18](https://react.dev/) - Component-based UI library
-- [Three.js](https://threejs.org/) - 3D graphics and animations
-- Modern CSS3 - Glassmorphism, gradients, scroll effects
-- Responsive Design - Mobile-first approach
-
-### **Backend**
-
-- [Flask 3.0](https://flask.palletsprojects.com/) - Python web framework
-- [Flask-JWT-Extended](https://flask-jwt-extended.readthedocs.io/) - Authentication
-- [Flask-CORS](https://flask-cors.readthedocs.io/) - Cross-origin support
-- [Gunicorn](https://gunicorn.org/) + [Gevent](http://www.gevent.org/) - Production server
-
-### **AI/ML**
-
-- [Groq API](https://groq.com/) - Ultra-fast LLM inference
-- Llama 3.3 70B Versatile - High-quality conversational model
-- [ChromaDB](https://www.trychroma.com/) - Vector database for RAG
-- [Sentence Transformers](https://www.sbert.net/) - Embedding generation
-
-### **Security**
-
-- [bcrypt](https://github.com/pyca/bcrypt/) - Password hashing
-- [Cryptography (Fernet)](https://cryptography.io/) - API key encryption
-- JWT - Stateless authentication
-
----
-
-## 🚀 Getting Started
+## 🛠️ Local Development
 
 ### Prerequisites
 
-- **Python 3.8+** - [Download](https://www.python.org/downloads/)
-- **Node.js 16+** - [Download](https://nodejs.org/)
-- **npm or yarn** - Comes with Node.js
-- **Groq API Key** - [Get yours free](https://console.groq.com/)
+- Python 3.11+
+- Node.js 18+
+- Groq API key
 
-### Installation
-
-1. **Clone the repository**
-
-   ```bash
-   git clone https://github.com/Vedulaudayeaswar/AIDevs.git
-   cd AIDevs
-   ```
-
-2. **Backend Setup**
-
-   ```bash
-   cd react-version/backend
-
-   # Create virtual environment (recommended)
-   python -m venv venv
-
-   # Activate virtual environment
-   # Windows:
-   venv\Scripts\activate
-   # macOS/Linux:
-   source venv/bin/activate
-
-   # Install dependencies
-   pip install -r requirements.txt
-   ```
-
-3. **Frontend Setup**
-   ```bash
-   cd ../  # Go back to react-version folder
-   npm install
-   ```
-
-### Environment Setup
-
-Create a `.env` file in `react-version/backend/`:
-
-```env
-# Backend Configuration
-GROQ_API_KEY=your_groq_api_key_here
-JWT_SECRET_KEY=your-super-secret-jwt-key-change-in-production
-FLASK_ENV=development
-
-# Database
-CHROMA_PERSIST_DIR=./chroma_db
-
-# Encryption Key (generate with: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())")
-FERNET_KEY=your_fernet_encryption_key_here
-```
-
-**Generate Fernet Key:**
+### Backend Setup
 
 ```bash
+cd backend
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Create .env file
+cp .env.example .env
+
+# Edit .env and add your Groq API key
+# Generate encryption key:
 python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
-```
 
----
-
-## 💻 Usage
-
-### Development Mode
-
-**1. Start Backend Server**
-
-```bash
-cd react-version/backend
+# Run backend
 python app.py
 ```
 
-Backend runs on: `http://localhost:5000`
+Backend runs on `http://localhost:5000`
 
-**2. Start Frontend (in new terminal)**
+### Frontend Setup
 
 ```bash
 cd react-version
+
+# Install dependencies
+npm install
+
+# Run frontend
 npm start
 ```
 
-Frontend runs on: `http://localhost:3000`
+Frontend runs on `http://localhost:3000`
 
-**3. Access the Application**
+## 📁 Project Structure
 
-- Open browser: `http://localhost:3000`
-- Register with your Groq API key
-- Start building your website!
+````
+react-version/
+├── backend/                    # Flask backend
+│   ├── app.py                 # Main Flask application
+│   ├── requirements.txt       # Python dependencies
+│   ├── Procfile              # Render deployment config
+│   ├── runtime.txt           # Python version
+│   ├── agents/               # AI agent system
+│   │   ├── orchestrator.py  # Main orchestrator
+│   │   ├── lead_agent.py    # Conversation manager
+│   │   ├── frontend_agent.py
+│   │   ├── backend_agent.py
+│   │   └── test_agent.py
+│   └── utils/
+│       ├── auth_manager.py   # Authentication
+│       └── rag_manager.py    # ChromaDB integration
+├── src/                       # React frontend
+│   ├── components/
+│   │   ├── ChatbotPage.js   # Main chatbot interface
+│   │   ├── RegisterPage.js  # User registration
+│   │   └── ...
+│   └── config.js             # API configuration
+├── public/
+├── render.yaml               # Render blueprint
+└── package.json
 
-### Production Mode
+## 🔐 Environment Variables
 
-**Backend (with Gunicorn):**
+### Backend (.env)
 
 ```bash
-cd react-version/backend
-bash start_production.sh
-# Or manually:
-gunicorn -w 4 -k gevent --worker-connections 1000 --bind 0.0.0.0:5000 app:app
+# Required
+GROQ_API_KEY=your-groq-api-key
+ENCRYPTION_KEY=your-encryption-key
+
+# Auto-generated (production)
+JWT_SECRET_KEY=auto-generated-by-render
+
+# Optional
+FLASK_ENV=production
+CORS_ORIGINS=https://your-frontend-url.onrender.com
+````
+
+### Frontend
+
+```bash
+REACT_APP_API_URL=https://your-backend-url.onrender.com
 ```
 
-**Frontend (build):**
+## 🎯 How It Works
+
+1. **User describes website** → Lead agent manages conversation
+2. **Frontend generation** → Frontend agent creates HTML/CSS/JS sections
+3. **Backend generation** → Backend agent creates Flask API automatically
+4. **Testing** → Test agent validates responsiveness and functionality
+5. **Download** → User gets complete full-stack package
+
+## 📦 Deployment Files
+
+- **`render.yaml`** - Blueprint for deploying all services at once
+- **`Procfile`** - Tells Render how to start the backend
+- **`runtime.txt`** - Specifies Python version
+- **`backend/.env.example`** - Template for environment variables
+
+## 🧪 Testing
 
 ```bash
+# Backend tests
+cd backend
+pytest
+
+# Frontend tests
 cd react-version
-npm run build
-# Serve the build folder with your preferred method
+npm test
 ```
 
----
+## 📚 Documentation
 
-## 🌐 Deployment
-
-### Option 1: Deploy to Vercel (Frontend) + Render (Backend)
-
-**Frontend (Vercel):**
-
-1. Push code to GitHub
-2. Go to [Vercel](https://vercel.com/)
-3. Import your repository
-4. Set build command: `cd react-version && npm run build`
-5. Set output directory: `react-version/build`
-6. Deploy!
-
-**Backend (Render):**
-
-1. Go to [Render](https://render.com/)
-2. Create new Web Service
-3. Connect your GitHub repo
-4. Set:
-   - **Build Command**: `cd react-version/backend && pip install -r requirements.txt`
-   - **Start Command**: `cd react-version/backend && gunicorn -w 4 -k gevent --bind 0.0.0.0:$PORT app:app`
-   - **Environment Variables**: Add `GROQ_API_KEY`, `JWT_SECRET_KEY`, `FERNET_KEY`
-5. Deploy!
-
-### Option 2: Deploy to Heroku
-
-```bash
-# Install Heroku CLI
-# Create Procfile in root:
-echo "web: cd react-version/backend && gunicorn -w 4 -k gevent app:app" > Procfile
-
-# Deploy
-heroku create your-app-name
-heroku config:set GROQ_API_KEY=your_key JWT_SECRET_KEY=your_secret FERNET_KEY=your_fernet_key
-git push heroku main
-```
-
-### Option 3: Deploy to AWS/GCP/Azure
-
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed cloud deployment guides.
-
----
-
-## 🏗️ Architecture
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                     User Interface                       │
-│              (React + Three.js + CSS3)                   │
-└───────────────────────┬─────────────────────────────────┘
-                        │ JWT Auth
-                        ▼
-┌─────────────────────────────────────────────────────────┐
-│                   Flask Backend API                      │
-│          (ThreadPoolExecutor + Multi-threading)          │
-├─────────────────────────────────────────────────────────┤
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
-│  │  Lead Agent  │  │Frontend Agent│  │Backend Agent │  │
-│  │ (Orchestrate)│→ │ (HTML/CSS/JS)│  │  (Flask API) │  │
-│  └──────────────┘  └──────────────┘  └──────────────┘  │
-│         │                                      │         │
-│         └──────────── Groq API ────────────────┘         │
-│              (Llama 3.3 70B Versatile)                   │
-└───────────────────────┬─────────────────────────────────┘
-                        ▼
-┌─────────────────────────────────────────────────────────┐
-│                   ChromaDB (Vector DB)                   │
-│  • aidevs_users (encrypted credentials)                 │
-│  • aidevs_conversations (RAG context)                   │
-└─────────────────────────────────────────────────────────┘
-```
-
-**Key Components:**
-
-- **Multi-Agent System**: Specialized AI agents for different tasks
-- **RAG Pipeline**: Context-aware responses using conversation history
-- **Vector Database**: Fast semantic search with embeddings
-- **Concurrent Processing**: ThreadPoolExecutor handles parallel requests
-- **Secure Storage**: Fernet encryption for sensitive data
-
-For detailed architecture documentation, see [ARCHITECTURE.md](./react-version/backend/ARCHITECTURE.md)
-
----
-
-## 📖 Documentation
-
-- [Architecture Guide](./react-version/backend/ARCHITECTURE.md) - System design and patterns
-- [Authentication Flow](./react-version/AUTHENTICATION_README.md) - JWT and encryption details
-- [API Reference](#) - Backend endpoints documentation
-- [Agent System](#) - How multi-agent collaboration works
-
----
+- [Quick Start Guide](QUICK_START_RENDER.md) - Get started fast
+- [Deployment Checklist](DEPLOYMENT_CHECKLIST.md) - Pre-deployment prep
+- [Full Render Guide](RENDER_DEPLOYMENT.md) - Complete deployment documentation
+- [Authentication Guide](AUTHENTICATION_README.md) - Auth system details
+- [Architecture Guide](backend/ARCHITECTURE.md) - System design
 
 ## 🤝 Contributing
 
-Contributions are what make the open-source community amazing! Any contributions you make are **greatly appreciated**.
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+## 📄 License
 
----
+This project is licensed under the MIT License.
 
-## 📧 Contact
+## 💬 Support
 
-Email: vedulaudayeaswar2004@gmail.com
-
-Project Link: [https://github.com/Vedulaudayeaswar/AIDevs](https://github.com/Vedulaudayeaswar/AIDevs)
-
----
+- Issues: [GitHub Issues](https://github.com/YOUR_USERNAME/aidevs/issues)
+- Discussions: [GitHub Discussions](https://github.com/YOUR_USERNAME/aidevs/discussions)
 
 ## 🙏 Acknowledgments
 
-- [Groq](https://groq.com/) - Lightning-fast LLM inference
-- [Meta AI](https://ai.meta.com/) - Llama 3.3 model
-- [ChromaDB](https://www.trychroma.com/) - Vector database
-- [Framer](https://www.framer.com/) - Design inspiration
-- [Three.js](https://threejs.org/) - 3D graphics library
+- **Groq** - Fast LLM inference
+- **Render** - Easy deployment platform
+- **Flask** - Python web framework
+- **React** - Frontend framework
+- **ChromaDB** - Vector database for RAG
 
 ---
 
-<p align="center">Made with ❤️ by vedula uday easwar</p>
-<p align="center">⭐ Star this repo if you found it helpful!</p>
+**Built with ❤️ by the AIDevs Team**

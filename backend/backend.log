@@ -1,0 +1,38 @@
+ * Serving Flask app 'app'
+ * Debug mode: on
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.29.252:5000
+Press CTRL+C to quit
+ * Restarting with watchdog (windowsapi)
+ * Debugger is active!
+ * Debugger PIN: 671-619-026
+ * Detected change in 'C:\\Users\\padma\\Desktop\\AI Devs\\react-version\\backend\\agents\\base_agent.py', reloading
+ * Detected change in 'C:\\Users\\padma\\Desktop\\AI Devs\\react-version\\backend\\agents\\base_agent.py', reloading
+ * Detected change in 'C:\\Users\\padma\\Desktop\\AI Devs\\react-version\\backend\\agents\\base_agent.py', reloading
+ * Restarting with watchdog (windowsapi)
+ * Debugger is active!
+ * Debugger PIN: 671-619-026
+ * Detected change in 'C:\\Users\\padma\\Desktop\\AI Devs\\react-version\\backend\\check_users.py', reloading
+Exception in thread Thread-3 (serve_forever):
+Traceback (most recent call last):
+  File "C:\Program Files\Python312\Lib\threading.py", line 1075, in _bootstrap_inner
+    self.run()
+  File "C:\Program Files\Python312\Lib\threading.py", line 1012, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\padma\AppData\Roaming\Python\Python312\site-packages\werkzeug\serving.py", line 819, in serve_forever
+    super().serve_forever(poll_interval=poll_interval)
+  File "C:\Program Files\Python312\Lib\socketserver.py", line 235, in serve_forever
+    ready = selector.select(poll_interval)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\selectors.py", line 323, in select
+    r, w, _ = self._select(self._readers, self._writers, [], timeout)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\selectors.py", line 314, in _select
+    r, w, x = select.select(r, w, w, timeout)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: [WinError 10038] An operation was attempted on something that is not a socket
+ * Restarting with watchdog (windowsapi)
+ * Debugger is active!
+ * Debugger PIN: 671-619-026

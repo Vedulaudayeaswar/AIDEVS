@@ -2,6 +2,7 @@
   "name": "aidevs-react",
   "version": "1.0.0",
   "private": true,
+  "homepage": "/",
   "dependencies": {
     "gsap": "^3.14.1",
     "react": "^18.2.0",

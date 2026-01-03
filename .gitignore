@@ -1,53 +1,35 @@
-# Environment variables (CRITICAL - DO NOT COMMIT!)
-.env
-*.env
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# production
+/build
+
+# misc
+.DS_Store
 .env.local
-.env.production
+.env.development.local
+.env.test.local
+.env.production.local
 
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-venv/
-env/
-ENV/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# ChromaDB (vector database)
-chroma_db/
-*.db
-*.sqlite
-*.sqlite3
-
-# Node modules
-node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# React build
-/react-version/build
-/react-version/.pnp
-/react-version/.pnp.js
-
-# Testing
-/coverage
+# Backend specific
+backend/.env
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.pyc
+backend/chroma_db/
+backend/downloads/
+backend/.pytest_cache/
 
 # IDE
 .vscode/
@@ -55,13 +37,3 @@ yarn-error.log*
 *.swp
 *.swo
 *~
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
-
-# Downloads folder (user-generated files)
-react-version/backend/downloads/
