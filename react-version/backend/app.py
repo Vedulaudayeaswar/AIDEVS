@@ -48,10 +48,31 @@ app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'aidevs-secret-key-ch
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=24)
 jwt = JWTManager(app)
 
-# Initialize orchestrator and RAG
-rag_manager = RAGManager()
-auth_manager = AuthManager(rag_manager)
-orchestrator = AIDevsOrchestrator(rag_manager)
+# Lazy initialization to avoid loading heavy ML models on startup
+rag_manager = None
+auth_manager = None
+orchestrator = None
+
+def get_rag_manager():
+    """Lazy load RAG manager only when needed"""
+    global rag_manager
+    if rag_manager is None:
+        rag_manager = RAGManager()
+    return rag_manager
+
+def get_auth_manager():
+    """Lazy load auth manager"""
+    global auth_manager
+    if auth_manager is None:
+        auth_manager = AuthManager(get_rag_manager())
+    return auth_manager
+
+def get_orchestrator():
+    """Lazy load orchestrator only for chat requests"""
+    global orchestrator
+    if orchestrator is None:
+        orchestrator = AIDevsOrchestrator(get_rag_manager())
+    return orchestrator
 
 @app.route('/api/auth/register', methods=['POST'])
 def register():
@@ -64,7 +85,7 @@ def register():
         password = data.get('password', '')
         api_key = data.get('apiKey', '').strip()
         
-        result = auth_manager.register_user(
+        result = get_auth_manager().register_user(
             first_name, middle_name, last_name, 
             password, api_key
         )
@@ -98,7 +119,7 @@ def login():
         username = data.get('username', '').strip().lower()
         password = data.get('password', '')
         
-        result = auth_manager.login_user(username, password)
+        result = get_auth_manager().login_user(username, password)
         
         if result['success']:
             # Create JWT token
@@ -148,7 +169,7 @@ def chat():
         username = get_jwt_identity()
         
         # Get user's API key
-        user_api_key = auth_manager.get_user_api_key(username)
+        user_api_key = get_auth_manager().get_user_api_key(username)
         using_default = False
         
         if not user_api_key:
@@ -177,7 +198,7 @@ def chat():
             }), 400
 
         # Process message through orchestrator with user's API key
-        response = orchestrator.process_message(
+        response = get_orchestrator().process_message(
             user_message, session_id, user_api_key
         )
 
@@ -204,7 +225,7 @@ def get_preview():
     try:
         username = get_jwt_identity()
         session_id = f"{username}_session"
-        preview_code = orchestrator.get_preview_code(session_id)
+        preview_code = get_orchestrator().get_preview_code(session_id)
 
         return jsonify({
             'success': True,
@@ -227,13 +248,13 @@ def download_code():
         session_id = f"{username}_session"
         
         # Check if session exists and has backend code
-        if session_id not in orchestrator.sessions:
+        if session_id not in get_orchestrator().sessions:
             return jsonify({
                 'success': False,
                 'error': 'No active session. Please build your website first.'
             }), 404
         
-        session = orchestrator.sessions[session_id]
+        session = get_orchestrator().sessions[session_id]
         backend_code = session.get('backend_code', '')
         frontend_code = session.get('frontend_code', {})
         
@@ -251,7 +272,7 @@ def download_code():
                 'backend_ready': False
             }), 400
         
-        zip_filename = orchestrator.generate_download_package(session_id)
+        zip_filename = get_orchestrator().generate_download_package(session_id)
 
         if not zip_filename:
             return jsonify({
@@ -284,7 +305,7 @@ def get_status():
         username = get_jwt_identity()
         session_id = f"{username}_session"
         
-        if session_id not in orchestrator.sessions:
+        if session_id not in get_orchestrator().sessions:
             return jsonify({
                 'success': True,
                 'has_session': False,
@@ -293,7 +314,7 @@ def get_status():
                 'download_ready': False
             })
         
-        session = orchestrator.sessions[session_id]
+        session = get_orchestrator().sessions[session_id]
         frontend_code = session.get('frontend_code', {})
         backend_code = session.get('backend_code', '')
         
@@ -325,8 +346,8 @@ def reset_session():
         session_id = f"{username}_session"
         
         # Clear from orchestrator
-        if session_id in orchestrator.sessions:
-            del orchestrator.sessions[session_id]
+        if session_id in get_orchestrator().sessions:
+            del get_orchestrator().sessions[session_id]
         
         # Clear from RAG
         rag_manager.clear_session(session_id)
