@@ -1,0 +1,59 @@
+services:
+  # Backend API Service
+  - type: web
+    name: aidevs-backend
+    env: python
+    region: oregon
+    buildCommand: "cd backend && pip install -r requirements.txt"
+    startCommand: "cd backend && gunicorn -w 4 -k gevent --worker-connections 1000 --bind 0.0.0.0:$PORT app:app"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: GROQ_API_KEY
+        sync: false # You'll set this manually in Render dashboard
+      - key: ENCRYPTION_KEY
+        generateValue: true
+      - key: FLASK_ENV
+        value: production
+    healthCheckPath: /api/health
+
+  # Frontend Service
+  - type: web
+    name: aidevs-frontend
+    env: static
+    region: oregon
+    buildCommand: "npm install && npm run build"
+    staticPublishPath: ./build
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: REACT_APP_API_URL
+        fromService:
+          type: web
+          name: aidevs-backend
+          envVarKey: RENDER_EXTERNAL_URL
+
+  # Database (optional - for ChromaDB persistence)
+  - type: pserv
+    name: aidevs-chromadb
+    env: docker
+    region: oregon
+    dockerfilePath: ./backend/Dockerfile.chromadb
+    envVars:
+      - key: PERSIST_DIRECTORY
+        value: /data
+    disk:
+      name: chromadb-data
+      mountPath: /data
+      sizeGB: 1

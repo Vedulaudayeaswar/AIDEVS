@@ -47,11 +47,25 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
 .btn-icon:hover {
   background: #f0f0f0;
   border-color: #d1d1d1;
+}
+
+.btn-icon.disabled,
+.btn-icon:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f9f9f9;
+}
+
+.btn-icon.disabled:hover,
+.btn-icon:disabled:hover {
+  background: #f9f9f9;
+  border-color: #e5e5e5;
 }
 
 .messages-container {

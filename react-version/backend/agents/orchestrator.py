@@ -85,8 +85,6 @@ class AIDevsOrchestrator:
                         response=str(frontend_result.get('response', ''))[:500],
                         stage=result['stage']
                     )
-                else:
-                    print(f"❌ Frontend generation failed for {section}")
                     
                     # Advance lead agent stage after successful frontend build
                     # This triggers the lead agent to ask for the next section
@@ -129,8 +127,10 @@ Generate COMPLETE, PRODUCTION-READY Flask code that can run immediately."""
                         )
                         
                         # Extract code from response
+                        backend_generated = False
                         if backend_response:
                             session['backend_code'] = backend_response
+                            backend_generated = True
                             self.rag_manager.store_interaction(
                                 session_id=session_id,
                                 agent='backend',
@@ -171,11 +171,18 @@ Generate COMPLETE, PRODUCTION-READY Flask code that can run immediately."""
                         print(f"   Tests: {len(str(session.get('test_results', '')))} chars")
                         print("="*60 + "\n")
                         
-                        # Use the next stage result message
-                        result['response'] = next_stage_result.get('response', result['response'])
+                        # Update the response to inform user about backend generation
+                        if backend_generated:
+                            result['response'] = next_stage_result.get('response', '') + "\n\n✅ **Backend Integration Complete!** Your Flask API has been generated and integrated with the frontend. You can now download the complete full-stack project!"
+                        else:
+                            result['response'] = next_stage_result.get('response', '') + "\n\n⚠️ **Note:** There was an issue generating the backend. The frontend is ready, but please try again for the complete package."
                     else:
                         # For non-footer sections, use the next prompt from lead agent
                         result['response'] = next_stage_result.get('response', result['response'])
+                else:
+                    # Frontend generation failed
+                    print(f"❌ Frontend generation failed for {section}")
+                    result['response'] = f"I encountered an issue generating the {section} section. Please try again or provide more specific details."
             
             return {
                 'message': result['response'],
