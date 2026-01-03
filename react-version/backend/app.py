@@ -19,7 +19,17 @@ from functools import wraps
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+
+# CORS Configuration
+cors_origins = os.getenv('CORS_ORIGINS', 'https://aidevs-frontend.onrender.com,http://localhost:3000').split(',')
+CORS(app, resources={
+    r"/api/*": {
+        "origins": cors_origins,
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"],
+        "supports_credentials": True
+    }
+})
 
 # ===== CONCURRENCY & PARALLELISM ARCHITECTURE =====
 # Thread pool for non-blocking I/O operations
