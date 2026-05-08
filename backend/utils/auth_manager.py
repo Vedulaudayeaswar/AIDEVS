@@ -174,11 +174,27 @@ class AuthManager:
     
     def get_user_api_key(self, username):
         """Get decrypted API key for user"""
-        user = self.rag_manager.get_user(username)
-        if not user:
+        try:
+            user = self.rag_manager.get_user(username)
+            if not user:
+                print(f"DEBUG: No user record found for username='{username}'")
+                return None
+
+            encrypted = user.get('api_key_encrypted')
+            if not encrypted:
+                print(f"DEBUG: User '{username}' has no encrypted API key stored")
+                return None
+
+            try:
+                decrypted = self.decrypt_api_key(encrypted)
+                print(f"DEBUG: Successfully decrypted API key for user='{username}' (masked: {decrypted[:4]}***{decrypted[-4:]})")
+                return decrypted
+            except Exception as e:
+                print(f"ERROR: Failed to decrypt API key for user='{username}': {e}")
+                return None
+        except Exception as e:
+            print(f"ERROR: Exception retrieving user '{username}' from RAG: {e}")
             return None
-        
-        return self.decrypt_api_key(user['api_key_encrypted'])
     
     def mask_api_key(self, api_key):
         """Mask API key for display (sk-****...****)"""
