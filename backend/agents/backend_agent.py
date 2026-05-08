@@ -84,7 +84,8 @@ Generate COMPLETE, PRODUCTION-READY Flask code that:
 
 OUTPUT ONLY THE PYTHON CODE, NO EXPLANATIONS."""
         
-        response = self.generate_response(prompt, context)
+        # Ensure API key (passed in `context`) is forwarded as `api_key`
+        response = self.generate_response(prompt, api_key=context)
         
         # Extract code from potential markdown code blocks
         if '```python' in response:
