@@ -8,6 +8,8 @@ const ChatPanel = ({
   isLoading,
   onReset,
   onDownload,
+  downloadReady = false,
+  backendReady = false,
 }) => {
   const navigate = useNavigate();
   const [inputMessage, setInputMessage] = useState("");
@@ -60,8 +62,15 @@ const ChatPanel = ({
           </button>
           <button
             onClick={onDownload}
-            className="btn-icon"
-            title="Download Code"
+            className={`btn-icon ${downloadReady ? "" : "disabled"}`}
+            title={
+              downloadReady
+                ? "Download Code"
+                : backendReady
+                ? "Download Code"
+                : "Backend generation in progress..."
+            }
+            disabled={!downloadReady}
           >
             <svg
               width="20"
@@ -69,11 +78,24 @@ const ChatPanel = ({
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
+              strokeOpacity={downloadReady ? "1" : "0.5"}
             >
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
               <polyline points="7 10 12 15 17 10" />
               <line x1="12" y1="15" x2="12" y2="3" />
             </svg>
+            {!downloadReady && backendReady === false && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: "-5px",
+                  right: "-5px",
+                  fontSize: "10px",
+                }}
+              >
+                ⏳
+              </span>
+            )}
           </button>
           <button onClick={onReset} className="btn-icon" title="Reset Session">
             <svg

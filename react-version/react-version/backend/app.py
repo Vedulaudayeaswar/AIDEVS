@@ -215,13 +215,39 @@ def download_code():
     try:
         username = get_jwt_identity()
         session_id = f"{username}_session"
+        
+        # Check if session exists and has backend code
+        if session_id not in orchestrator.sessions:
+            return jsonify({
+                'success': False,
+                'error': 'No active session. Please build your website first.'
+            }), 404
+        
+        session = orchestrator.sessions[session_id]
+        backend_code = session.get('backend_code', '')
+        frontend_code = session.get('frontend_code', {})
+        
+        # Validate that we have both frontend and backend
+        if not frontend_code:
+            return jsonify({
+                'success': False,
+                'error': 'No frontend code available. Please build your website first.'
+            }), 400
+        
+        if not backend_code or len(backend_code) < 100:
+            return jsonify({
+                'success': False,
+                'error': 'Backend code is still being generated. Please wait for the complete build to finish.',
+                'backend_ready': False
+            }), 400
+        
         zip_filename = orchestrator.generate_download_package(session_id)
 
         if not zip_filename:
             return jsonify({
                 'success': False,
-                'error': 'No code to download'
-            }), 404
+                'error': 'Failed to generate download package'
+            }), 500
 
         zip_path = os.path.join('downloads', zip_filename)
         
@@ -231,6 +257,49 @@ def download_code():
             as_attachment=True,
             download_name=zip_filename
         )
+    except Exception as e:
+        import traceback
+        print("ERROR in /api/download:")
+        print(traceback.format_exc())
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/status', methods=['POST'])
+@jwt_required()
+def get_status():
+    """Get current session status including backend generation"""
+    try:
+        username = get_jwt_identity()
+        session_id = f"{username}_session"
+        
+        if session_id not in orchestrator.sessions:
+            return jsonify({
+                'success': True,
+                'has_session': False,
+                'frontend_ready': False,
+                'backend_ready': False,
+                'download_ready': False
+            })
+        
+        session = orchestrator.sessions[session_id]
+        frontend_code = session.get('frontend_code', {})
+        backend_code = session.get('backend_code', '')
+        
+        has_frontend = bool(frontend_code)
+        has_backend = bool(backend_code and len(backend_code) > 100)
+        download_ready = has_frontend and has_backend
+        
+        return jsonify({
+            'success': True,
+            'has_session': True,
+            'frontend_ready': has_frontend,
+            'backend_ready': has_backend,
+            'download_ready': download_ready,
+            'current_stage': session.get('current_stage', 'initial'),
+            'sections_completed': list(frontend_code.keys())
+        })
     except Exception as e:
         return jsonify({
             'success': False,
@@ -275,6 +344,9 @@ if __name__ == '__main__':
     # Create downloads directory if it doesn't exist
     os.makedirs('downloads', exist_ok=True)
     
+    # Get port from environment variable (for Render) or use 5000
+    port = int(os.getenv('PORT', 5000))
+    
     print("=" * 60)
     print("🚀 AIDevs Backend - High-Performance Architecture")
     print("=" * 60)
@@ -282,15 +354,16 @@ if __name__ == '__main__':
     print("✅ Non-blocking I/O: Async route handling")
     print("✅ Event-driven: Flask with multi-threaded request handling")
     print("✅ Load balancing ready: Production deployment with Gunicorn/uWSGI")
+    print(f"✅ Running on port: {port}")
     print("=" * 60)
     
     # Run Flask server with multi-threaded support
     # In production, use: gunicorn -w 4 -k gevent --worker-connections 1000 app:app
     app.run(
-        debug=True, 
+        debug=os.getenv('FLASK_ENV') != 'production',
         host='0.0.0.0', 
-        port=5000,
+        port=port,
         threaded=True,  # Enable multi-threading for concurrent request handling
-        use_reloader=True
+        use_reloader=os.getenv('FLASK_ENV') != 'production'
     )
 
