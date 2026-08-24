@@ -9,7 +9,7 @@ class BaseAgent:
         self.system_prompt = system_prompt
         
     def generate_response(self, user_message, context=None, api_key=None):
-        """Generate response using Llama via Groq (FREE)"""
+        """Generate response using Groq."""
         # Use provided API key or fallback to .env
         if not api_key:
             api_key = os.getenv('GROQ_API_KEY')
@@ -35,10 +35,11 @@ class BaseAgent:
         
         messages.append({"role": "user", "content": user_message})
         
-        # Use Groq's free models (completely FREE, no credits needed)
+        model = os.getenv('GROQ_MODEL', 'openai/gpt-oss-120b')
+
         try:
             response = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",  # High-quality model for better conversations
+                model=model,
                 messages=messages,
                 temperature=0.7,
                 max_tokens=2000  # Increased for better code generation
