@@ -8,7 +8,7 @@ class BaseAgent:
         self.role = role
         self.system_prompt = system_prompt
         
-    def generate_response(self, user_message, context=None, api_key=None):
+    def generate_response(self, user_message, context=None, api_key=None, max_tokens=6000):
         """Generate response using Llama via Groq (FREE)"""
         # Use provided API key or fallback to .env
         if not api_key:
@@ -41,7 +41,7 @@ class BaseAgent:
                 model="llama-3.3-70b-versatile",  # High-quality model for better conversations
                 messages=messages,
                 temperature=0.7,
-                max_tokens=2000  # Increased for better code generation
+                max_tokens=max_tokens
             )
             return response.choices[0].message.content
         except Exception as e:
@@ -70,6 +70,9 @@ class BaseAgent:
             code_end = response.find("```", code_start)
             if code_end > code_start:
                 code_content = response[code_start:code_end].strip()
+                first_line, _, remainder = code_content.partition('\n')
+                if first_line.strip().lower() in {'html', 'javascript', 'js', 'css', 'python'}:
+                    code_content = remainder.strip()
                 # If it looks like HTML, treat it as HTML
                 if '<' in code_content and '>' in code_content:
                     code_blocks['html'] = code_content

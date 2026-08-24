@@ -53,9 +53,23 @@ class AIDevsOrchestrator:
                 section = self._determine_section(result['stage'])
                 print(f"🎨 Generating {section} section...")
                 
+                lead_agent = session['lead_agent']
+                gathered_info = getattr(lead_agent, 'gathered_info', {})
+                session['website_type'] = gathered_info.get(
+                    'type',
+                    session.get('website_type', 'general')
+                )
+                project_requirements = {
+                    'current_message': user_message,
+                    'stage': result['stage'],
+                    'section': section,
+                    'gathered_info': gathered_info,
+                    'rag_context': rag_context
+                }
+
                 frontend_result = self.frontend_agent.generate_section(
                     section,
-                    user_message,
+                    project_requirements,
                     session['frontend_code'],
                     user_api_key
                 )
@@ -87,27 +101,26 @@ class AIDevsOrchestrator:
                     )
                 else:
                     print(f"❌ Frontend generation failed for {section}")
+
+                # Advance the lead after every frontend attempt so chat and preview stay synchronized.
+                next_stage_result = session['lead_agent'].process_request(
+                    f"Section {section} complete",
+                    rag_context,
+                    user_api_key
+                )
+                
+                # Auto-trigger backend and test after footer is complete
+                if result['stage'] == 'footer':
+                    print("\n" + "="*60)
+                    print("🎉 FOOTER COMPLETED! AUTO-GENERATING BACKEND & TESTS")
+                    print("="*60)
                     
-                    # Advance lead agent stage after successful frontend build
-                    # This triggers the lead agent to ask for the next section
-                    next_stage_result = session['lead_agent'].process_request(
-                        f"Section {section} complete",
-                        rag_context,
-                        user_api_key
-                    )
+                    # Generate backend API
+                    combined_html = self.frontend_agent.combine_sections(session['frontend_code'])
                     
-                    # Auto-trigger backend and test after footer is complete
-                    if result['stage'] == 'footer':
-                        print("\n" + "="*60)
-                        print("🎉 FOOTER COMPLETED! AUTO-GENERATING BACKEND & TESTS")
-                        print("="*60)
-                        
-                        # Generate backend API
-                        combined_html = self.frontend_agent.combine_sections(session['frontend_code'])
-                        
-                        # Create detailed requirements for backend
-                        website_type = session.get('website_type', 'general')
-                        backend_requirements = f"""Create a production-ready Flask backend API for this {website_type} website.
+                    # Create detailed requirements for backend
+                    website_type = session.get('website_type', 'general')
+                    backend_requirements = f"""Create a production-ready Flask backend API for this {website_type} website.
 
 FRONTEND STRUCTURE:
 {combined_html[:1500]}
@@ -121,61 +134,58 @@ REQUIRED FEATURES:
 6. Health check endpoint (GET /api/health)
 
 Generate COMPLETE, PRODUCTION-READY Flask code that can run immediately."""
-                        
-                        print("📡 Calling Backend Agent...")
-                        backend_response = self.backend_agent.generate_api(
-                            frontend_requirements=backend_requirements,
-                            context=user_api_key
+                    
+                    print("📡 Calling Backend Agent...")
+                    backend_response = self.backend_agent.generate_api(
+                        frontend_requirements=backend_requirements,
+                        context=user_api_key
+                    )
+                    
+                    # Extract code from response
+                    if backend_response:
+                        session['backend_code'] = backend_response
+                        self.rag_manager.store_interaction(
+                            session_id=session_id,
+                            agent='backend',
+                            message="Auto-generated backend after footer completion",
+                            response=backend_response[:500],
+                            stage='backend_generation'
                         )
-                        
-                        # Extract code from response
-                        if backend_response:
-                            session['backend_code'] = backend_response
-                            self.rag_manager.store_interaction(
-                                session_id=session_id,
-                                agent='backend',
-                                message="Auto-generated backend after footer completion",
-                                response=backend_response[:500],
-                                stage='backend_generation'
-                            )
-                            print(f"✅ Backend API generated: {len(backend_response)} characters")
-                            print(f"   Preview: {backend_response[:150]}...")
-                        else:
-                            print("❌ Backend generation returned empty!")
-                        
-                        # Run tests
-                        print("🧪 Running frontend tests...")
-                        test_result = self.test_agent.test_frontend(
-                            html_code=combined_html,
-                            requirements="Validate responsive design, accessibility, and functionality"
-                        )
-                        
-                        if test_result:
-                            session['test_results'] = test_result
-                            self.rag_manager.store_interaction(
-                                session_id=session_id,
-                                agent='test',
-                                message="Auto-ran tests after footer completion",
-                                response=str(test_result)[:500],
-                                stage='testing'
-                            )
-                            print(f"✅ Tests completed: {len(str(test_result))} characters")
-                            print(f"   Preview: {str(test_result)[:150]}...")
-                        else:
-                            print("❌ Test generation returned empty!")
-                        
-                        print("="*60)
-                        print(f"📊 SUMMARY:")
-                        print(f"   Frontend: {len(combined_html)} chars")
-                        print(f"   Backend: {len(session.get('backend_code', ''))} chars")
-                        print(f"   Tests: {len(str(session.get('test_results', '')))} chars")
-                        print("="*60 + "\n")
-                        
-                        # Use the next stage result message
-                        result['response'] = next_stage_result.get('response', result['response'])
+                        print(f"✅ Backend API generated: {len(backend_response)} characters")
+                        print(f"   Preview: {backend_response[:150]}...")
                     else:
-                        # For non-footer sections, use the next prompt from lead agent
-                        result['response'] = next_stage_result.get('response', result['response'])
+                        print("❌ Backend generation returned empty!")
+                    
+                    # Run tests
+                    print("🧪 Running frontend tests...")
+                    test_result = self.test_agent.test_frontend(
+                        html_code=combined_html,
+                        requirements="Validate responsive design, accessibility, and functionality"
+                    )
+                    
+                    if test_result:
+                        session['test_results'] = test_result
+                        self.rag_manager.store_interaction(
+                            session_id=session_id,
+                            agent='test',
+                            message="Auto-ran tests after footer completion",
+                            response=str(test_result)[:500],
+                            stage='testing'
+                        )
+                        print(f"✅ Tests completed: {len(str(test_result))} characters")
+                        print(f"   Preview: {str(test_result)[:150]}...")
+                    else:
+                        print("❌ Test generation returned empty!")
+                    
+                    print("="*60)
+                    print(f"📊 SUMMARY:")
+                    print(f"   Frontend: {len(combined_html)} chars")
+                    print(f"   Backend: {len(session.get('backend_code', ''))} chars")
+                    print(f"   Tests: {len(str(session.get('test_results', '')))} chars")
+                    print("="*60 + "\n")
+
+                result['response'] = next_stage_result.get('response', result['response'])
+                result['stage'] = next_stage_result.get('stage', result['stage'])
             
             return {
                 'message': result['response'],
