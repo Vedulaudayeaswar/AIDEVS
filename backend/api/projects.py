@@ -11,6 +11,7 @@ from api.common import ApiError, audit, get_owned_project, json_body, rate_limit
 from db import get_session
 from models import utcnow, AgentRun, Asset, ChatMessage, Entity, Page, PreviewRecord, Project, ProjectVersion
 from services import checks, jobs, limits, memory, templates, versions
+from services.ai_client import AIInvalidOutput
 from services.compiler import compose_page, preview_document, split_page
 from services.crawler import CrawlError, crawl
 from services.exporter import build_export, referenced_asset_ids
@@ -647,7 +648,7 @@ def assistant(project_id):
                       meta={"selection": selection.get("nodeId")} if selection else {}))
     s.commit()
 
-    if selection and isinstance(selection.get("node"), dict):
+    if selection and isinstance(selection.get("node"), dict) and not wants_feature(message):
         # Visual Editing agent: returns a modified subtree; the studio applies it
         # as one undoable edit and autosaves (so nothing is written here).
         try:
@@ -663,6 +664,15 @@ def assistant(project_id):
         try:
             result = editing.edit_node(node, message, project.tokens or {}, orchestrator.entity_dicts(project.entities),
                                        context, page_ids=page_ids, user_id=current_user.id, project_id=project.id)
+        except AIInvalidOutput as exc:
+            if not any(hint in str(exc) for hint in ("unknown entity", 'expected {"node"')):
+                limits.refund(quota_id)
+                raise
+            # The request needs a data model that does not exist yet: it is a feature, not a
+            # visual edit. Hand it to the Orchestrator (pages + data models + API) instead.
+            run = _submit_or_refund(s, quota_id, project.id, current_user.id, "feature", "feature",
+                                    project.id, current_user.id, message)
+            return jsonify(mode="feature", run=run_dict(run)), 202
         except Exception:
             limits.refund(quota_id)  # failed AI work does not count against the user's quota
             raise
@@ -675,6 +685,18 @@ def assistant(project_id):
     run = _submit_or_refund(s, quota_id, project.id, current_user.id, "feature", "feature",
                             project.id, current_user.id, message)
     return jsonify(mode="feature", run=run_dict(run)), 202
+
+
+_FEATURE_INTENT = re.compile(
+    r"\b(add|create|build|implement|introduce|set up|setup)\b.{0,80}?\b(feature|system|functionality|module|"
+    r"database|data model|table|api|new page|notifications?|wishlist|cart|checkout|comments?|reviews?|"
+    r"bookings?|subscriptions?|messaging|chat)\b", re.I)
+
+
+def wants_feature(message):
+    """True when an instruction asks for project-wide work (new data, pages or API), which the
+    single-element Visual Editing agent cannot do even if an element happens to be selected."""
+    return bool(_FEATURE_INTENT.search(message))
 
 
 # -------------------------------------------------------------- checks/export

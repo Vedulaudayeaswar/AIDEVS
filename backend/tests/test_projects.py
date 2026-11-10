@@ -297,6 +297,29 @@ def test_ai_edit_of_selected_element_returns_validated_node(client, headers, fak
     assert body["node"]["styles"]["base"] == {"fontSize": "96px"}
 
 
+def test_feature_request_with_selected_element_runs_as_feature(client, headers, fake_ai):
+    project_id, _ = create_generated_project(client, headers)
+    page = load_page(client, headers, project_id)
+    heading = by_name(page["tree"], "Hero Heading")
+    resp = client.post(f"/api/projects/{project_id}/assistant", headers=headers, json={
+        "message": "Add a notifications feature where each user can mark their own notifications as read",
+        "selection": {"pageId": page["id"], "nodeId": heading["id"], "node": heading}})
+    assert resp.status_code == 202 and resp.get_json()["mode"] == "feature", ([c["kind"] for c in fake_ai.calls], resp.get_json())
+    assert not any(c["kind"] == "edit" for c in fake_ai.calls)
+
+
+def test_visual_edit_that_needs_new_data_falls_back_to_feature(client, headers, fake_ai):
+    project_id, _ = create_generated_project(client, headers)
+    page = load_page(client, headers, project_id)
+    heading = by_name(page["tree"], "Hero Heading")
+    fake_ai.overrides["edit"] = {"reply": "plan", "entities": [{"op": "add", "name": "alert"}]}  # not {"node"}
+    resp = client.post(f"/api/projects/{project_id}/assistant", headers=headers, json={
+        "message": "show the latest alerts here", "selection": {"pageId": page["id"], "nodeId": heading["id"],
+                                                                "node": heading}})
+    assert resp.status_code == 202 and resp.get_json()["mode"] == "feature", resp.get_json()
+    assert any(c["kind"] == "feature" for c in fake_ai.calls)
+
+
 # --------------------------------------------------------------- checks/assets
 def test_checks_find_contract_errors(client, headers):
     project_id, _ = create_generated_project(client, headers)

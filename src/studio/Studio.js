@@ -340,9 +340,14 @@ export default function Studio() {
     try {
       if (target) {
         const node = findNode(treeRef.current, target.id);
+        await flushSave(); // the server may route this to a project-wide feature run
         const res = await api.post(`/api/projects/${projectId}/assistant`, {
           message, selection: { pageId, nodeId: target.id, node },
         });
+        if (res.mode === "feature") {
+          setActiveRun(res.run);
+          return;
+        }
         if (res.mode === "edit" && findNode(treeRef.current, target.id)) {
           history.commit((t) => replaceNode(t, target.id, res.node));
         }
