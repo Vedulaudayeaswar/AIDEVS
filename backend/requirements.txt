@@ -18,7 +18,7 @@ certifi==2026.10.23
 beautifulsoup4==4.13.4
 pillow==13.0.0
 # --- optional shared rate limiting (used only when REDIS_URL is set) ---
-redis==5.2.1
+redis==8.1.0
 # --- generated-project test tooling (export validation) ---
 flask-sqlalchemy==3.1.1
 pytest==9.2.0
