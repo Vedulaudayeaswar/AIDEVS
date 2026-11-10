@@ -96,7 +96,7 @@ client asks the model once to repair, then fails without changes. Mutating runs 
 * **Uploads**: Pillow-verified PNG/JPEG/GIF/WebP only (no SVG), size limits, `nosniff`, served by unguessable id.
 * **Headers/CORS**: explicit origin allow-list, `X-Frame-Options: DENY`, `nosniff`, HSTS in production.
 
-## Jobs, limits and operations (2.1)
+## Jobs, limits and operations
 
 * **Durable job queue** (`services/jobs.py`): AI work is stored in `agent_runs` (payload, attempts, lease,
   timeout, cancel flag). Workers claim jobs with a compare-and-swap `UPDATE` (safe across processes on

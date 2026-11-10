@@ -1,15 +1,26 @@
 # Changelog
 
-## 2.2.0 — 2026-11-10 (zero-cost deployment)
+## 2.0.0 — 2026-11-10
 
-### Infrastructure
+AIDevs 2.0: AI full-stack development studio, production hardening and zero-cost deployment.
+
+### Studio polish (from the first real user test)
+- Premium dark theme for the Studio; Projects, Account, Admin and Legal pages match the homepage's light style.
+- Resumable generation ("Continue generation") when the free AI capacity runs out mid-build.
+- AI-generated colours are corrected for readable contrast.
+- Feature requests run as project-wide features even when an element is selected.
+- The AI assistant can use the project's uploaded images.
+
+### Zero-cost deployment
+
+#### Infrastructure
 - Zero-cost target: Render free web service + Render static site + **Neon** PostgreSQL free + Groq free.
   `render.yaml` now creates only free resources (no Render Postgres, workers, disks or Redis).
 - Neon support: URL normalization (`sslmode=require`), connect timeouts, TCP keepalives, small pool with
   recycle before scale-to-zero, wait-for-database at startup, `503 db_unavailable` + `Retry-After` on outages.
 - Production refuses to start on SQLite (Render's disk is ephemeral).
 
-### AI (Groq free tier)
+#### AI (Groq free tier)
 - Free-tier capacity manager: learns limits from Groq rate-limit headers, sizes requests to the 8K tokens/min
   window, schedules across three model buckets (adds `qwen/qwen3.8-27b`), honours `retry-after`, learns per-model
   output caps, waits a bounded time (25 s web / 90 s jobs), platform-wide daily budget that pauses new AI tasks.
@@ -17,22 +28,22 @@
   and output size dropped ~3x. Headings are normalised to exactly one `h1` per page.
 - Failed provider generations are counted in usage accounting (they consume real quota).
 
-### Fair use
+#### Fair use
 - Per-user daily quotas (3 projects, 3 generations, 15 AI modifications, 10 exports, 50 MB uploads, 1 concurrent
   AI task) enforced atomically under a per-user lock; failed/cancelled AI work is refunded; platform storage cap.
 - Fair job scheduling (users without running jobs go first).
 
-### UX
+#### UX
 - Cold-start banner, automatic retries for safe requests, server wake-up before login/registration, local drafts
   of unsaved Studio edits with automatic restore, autosave retry while the server wakes, AI capacity notices and
   remaining daily allowances on the dashboard and Account page.
 
-### Fixed
+#### Fixed
 - Generated backend tests embedded JSON literals (`false`/`null`) in Python (found by the real Groq run).
 
-## 2.1.0 — 2026-11-10 (production hardening)
+### Production hardening
 
-### Security
+#### Security
 - Rate limits could be bypassed by spoofing `X-Forwarded-For`; client IPs now come from `ProxyFix` with an explicit
   `TRUST_PROXY_HOPS`.
 - An untracked, un-ignored `react-version/.env` containing an API key could have been committed by `git add .`;
@@ -42,7 +53,7 @@
   React Router (open-redirect/XSS advisories); exported apps now use the same fixed versions (Vite 6, React Router 7).
 - Secret-redacting JSON logs with request IDs; admin API hidden (404) from non-admins.
 
-### Reliability
+#### Reliability
 - Durable database-backed job queue (leases, retries with backoff, timeouts, cancellation, crash recovery,
   separate worker process option); atomic per-project AI lock.
 - Atomic page saves (conditional UPDATE), collision-safe version numbering, SQLite WAL/busy timeout,
@@ -51,7 +62,7 @@
   exported sites load fonts non-blocking too.
 - N+1 query removed from the project list.
 
-### Added
+#### Added
 - Central model registry with per-task chains and live availability filtering; bounded validate-and-repair loop.
 - Admin-configurable fair-use limits (AI, concurrent jobs, projects, pages, storage, exports, job duration,
   registration switch); `/api/usage` and Account page meters.
@@ -61,13 +72,13 @@
 - CI (GitHub Actions), Dependabot, gitleaks, pre-commit; LICENSE, SECURITY, CONTRIBUTING, CODE_OF_CONDUCT,
   issue/PR templates; legal drafts; troubleshooting and production-readiness docs; real-Groq acceptance tests.
 
-### Removed
+#### Removed
 - Pre-React static site (`index.html`, `index.js`, `style.css`), duplicate root images, unused `runtime.txt` files,
   stray `%temp%/` download cache. The nested `react-version/` clone was moved to `../AIDevs-archive/`.
 
-## 2.0.0 — 2026-11-09
+### AI full-stack studio
 
-### Fixed
+#### Fixed
 - Users and sessions were lost on every restart (ChromaDB `Client()` is in-memory): users and projects now live in
   PostgreSQL/SQLite via SQLAlchemy with Alembic migrations.
 - Sessions survive page refreshes and browser restarts (rotating refresh tokens, silent refresh on 401).
@@ -78,7 +89,7 @@
 - Open CORS, hard-coded JWT secret fallback, unrestricted errors leaking stack details.
 - `render.yaml` referenced a non-existent `Dockerfile.chromadb`.
 
-### Added
+#### Added
 - Projects with ownership, pages, data models, assets, chat history, project memory, agent runs, versions
   (snapshot / compare / restore), audit and usage logs.
 - One-prompt application planning with reviewable spec; optional reference-URL analysis (SSRF-safe crawler).
@@ -93,10 +104,10 @@
   API docs, Docker, docker-compose, render.yaml, sourcemap.
 - Admin CLI (`backend/manage.py`), 54 backend tests, frontend unit tests.
 
-### Changed
+#### Changed
 - `/chatbot` classic builder kept for compatibility, now authenticated by user id and the central AI client.
 - ChromaDB is optional (`ENABLE_CHROMADB=1`); heavy ML dependencies removed from the default install.
 
-### Removed
+#### Removed
 - `utils/auth_manager.py`, ChromaDB user scripts, encryption-key generators and outdated deployment guides
   (superseded by `docs/`).

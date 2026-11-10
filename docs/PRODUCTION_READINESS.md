@@ -1,4 +1,4 @@
-# AIDevs 2.2 — Production Readiness Report (zero-cost deployment)
+# AIDevs 2.0 — Production Readiness Report (zero-cost deployment)
 
 _Date: 2026-11-10 · Branch: `fix/groq-api-key-forwarding`_
 
