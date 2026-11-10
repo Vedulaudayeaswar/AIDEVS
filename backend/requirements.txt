@@ -23,6 +23,6 @@ redis==5.2.1
 flask-sqlalchemy==3.1.1
 pytest==9.2.0
 # --- production server (event-driven) ---
-gunicorn==22.0.0
+gunicorn==26.2.0
 gevent==24.2.1
 # Optional semantic memory for the classic builder: pip install chromadb && set ENABLE_CHROMADB=1
