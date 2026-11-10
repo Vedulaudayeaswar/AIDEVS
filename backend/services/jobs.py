@@ -317,17 +317,30 @@ def worker_loop(stop_event=None, concurrency=1):
 
 
 _worker_thread = None
+_worker_pid = None
 _worker_lock = threading.Lock()
 
 
 def ensure_worker():
-    """Start the in-process worker once (unless a dedicated worker is used)."""
-    global _worker_thread
+    """Start the in-process worker once per process (unless a dedicated worker is used).
+
+    Fork-aware: gunicorn may import the app in its master and then fork the serving worker.
+    Threads do not survive a fork, so a forked process starts its own worker thread with its
+    own WORKER_ID (job leases are tied to it). Cheap enough to call on every request."""
+    global _worker_thread, _worker_pid, WORKER_ID
     if SYNC_MODE or os.getenv("RUN_WORKER_IN_PROCESS", "1") != "1":
         return
+    pid = os.getpid()
+    if _worker_pid == pid and _worker_thread is not None and _worker_thread.is_alive():
+        return
     with _worker_lock:
+        if _worker_pid != pid:
+            WORKER_ID = f"{socket.gethostname()}:{pid}:{uuid.uuid4().hex[:6]}"
+            _worker_thread = None
+            _worker_pid = pid
         if _worker_thread is None or not _worker_thread.is_alive():
             from config import Config
+            _last_heartbeat["at"] = now()
             _worker_thread = threading.Thread(target=worker_loop, kwargs={"concurrency": Config.AI_MAX_CONCURRENT_JOBS},
                                               name="aidevs-worker", daemon=True)
             _worker_thread.start()

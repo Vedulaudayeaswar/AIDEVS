@@ -190,3 +190,46 @@ def test_background_worker_loop_processes_jobs(app, client, headers, project):
     thread.join(5)
     assert _get(run_id).status == "succeeded"
     assert jobs.heartbeat() is not None
+
+
+def test_worker_restarts_in_forked_process(monkeypatch):
+    """gunicorn may build the app in its master and fork: the child must start its own worker."""
+    from services import jobs
+    started = []
+
+    class FakeThread:
+        def __init__(self, target=None, kwargs=None, name=None, daemon=None):
+            self.alive = False
+
+        def start(self):
+            self.alive = True
+            started.append(self)
+
+        def is_alive(self):
+            return self.alive
+
+    monkeypatch.setattr(jobs, "SYNC_MODE", False)
+    monkeypatch.setenv("RUN_WORKER_IN_PROCESS", "1")
+    monkeypatch.setattr(jobs.threading, "Thread", FakeThread)
+    monkeypatch.setattr(jobs, "_worker_thread", None)
+    monkeypatch.setattr(jobs, "_worker_pid", None)
+    monkeypatch.setattr(jobs, "WORKER_ID", jobs.WORKER_ID)  # restored after the test
+    monkeypatch.setattr(jobs.os, "getpid", lambda: 100)
+    jobs.ensure_worker()
+    jobs.ensure_worker()
+    assert len(started) == 1
+    parent_id = jobs.WORKER_ID
+    monkeypatch.setattr(jobs.os, "getpid", lambda: 200)  # forked child: the parent's thread is not here
+    jobs.ensure_worker()
+    assert len(started) == 2 and jobs.WORKER_ID != parent_id and ":200:" in jobs.WORKER_ID
+    assert jobs.heartbeat() is not None
+
+
+def test_after_fork_resets_connection_pool():
+    import db
+    from sqlalchemy import text
+    with db.engine.connect() as conn:
+        conn.execute(text("select 1"))
+    db.after_fork()
+    with db.engine.connect() as conn:
+        assert conn.execute(text("select 1")).scalar() == 1

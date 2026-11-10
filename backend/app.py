@@ -5,6 +5,7 @@ Production:    gunicorn -k gevent -w 1 --timeout 180 "app:create_app()"   (see r
 """
 import logging
 import os
+import sys
 
 from dotenv import load_dotenv
 
@@ -251,7 +252,21 @@ def create_app(config_object=None):
         # Jobs are durable: queued/expired work is picked up again by a worker.
         from services.jobs import ensure_worker, release_stale_locks
         release_stale_locks()
-        ensure_worker()
+        boot_pid = os.getpid()
+        state = {"pid": boot_pid}
+
+        @app.before_request
+        def _per_process_setup():
+            # gunicorn can create the app in its master and fork the serving worker:
+            # give the serving process its own DB connections and its own job worker.
+            pid = os.getpid()
+            if state["pid"] != pid:
+                state["pid"] = pid
+                database.after_fork()
+            ensure_worker()
+
+        if "gunicorn" not in sys.modules:
+            ensure_worker()  # plain `python app.py`: start now; under gunicorn the first request starts it
     return app
 
 

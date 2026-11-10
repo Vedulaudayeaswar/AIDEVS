@@ -82,6 +82,12 @@ def init_engine(url):
     return engine
 
 
+def after_fork():
+    """Drop pooled connections inherited from a parent process (never share sockets across a fork)."""
+    if engine is not None:
+        engine.dispose(close=False)
+
+
 def wait_for_db(attempts=None, delay=2.0):
     """Block until the database accepts connections (serverless PostgreSQL may need a few
     seconds to wake from scale-to-zero). Exponential backoff, bounded."""
