@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import * as THREE from "three";
 import "./LoginModal.css";
-import API_URL from "../config";
+import { Link } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 
 const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
   const canvasRef = useRef(null);
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
-    username: "",
+    identifier: "",
     password: "",
   });
   const [error, setError] = useState("");
@@ -95,25 +97,11 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
     setError("");
 
     try {
-      const response = await fetch(`${API_URL}/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        // Store JWT token
-        localStorage.setItem("aidevs_token", data.token);
-        localStorage.setItem("aidevs_username", data.username);
-
-        onLoginSuccess(data);
-      } else {
-        setError(data.error || "Login failed");
-      }
-    } catch (error) {
-      setError("Network error. Please try again.");
+      const user = await login(formData.identifier.trim(), formData.password);
+      setFormData({ identifier: "", password: "" });
+      onLoginSuccess(user);
+    } catch (err) {
+      setError(err.message || "Login failed");
     } finally {
       setIsSubmitting(false);
     }
@@ -123,11 +111,11 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
 
   return (
     <div className="login-modal-overlay" onClick={onClose}>
-      <div className="login-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="login-modal" role="dialog" aria-modal="true" aria-label="Log in" onClick={(e) => e.stopPropagation()}>
         <canvas ref={canvasRef} className="login-canvas" />
 
         <div className="login-content">
-          <button className="close-button" onClick={onClose}>
+          <button className="close-button" onClick={onClose} aria-label="Close">
             ✕
           </button>
 
@@ -138,20 +126,17 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
 
           <form onSubmit={handleSubmit} className="login-form">
             <div className="form-group">
-              <label htmlFor="username">Username</label>
+              <label htmlFor="identifier">Email or username</label>
               <input
                 type="text"
-                id="username"
-                name="username"
-                value={formData.username}
+                id="identifier"
+                name="identifier"
+                value={formData.identifier}
                 onChange={handleChange}
-                placeholder="firstname.lastname"
+                placeholder="you@example.com"
                 required
                 autoComplete="username"
               />
-              <small>
-                Use your auto-generated username (firstname.lastname)
-              </small>
             </div>
 
             <div className="form-group">
@@ -168,7 +153,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
               />
             </div>
 
-            {error && <div className="error-message">{error}</div>}
+            {error && <div className="error-message" role="alert">{error}</div>}
 
             <button
               type="submit"
@@ -179,7 +164,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
             </button>
 
             <div className="register-link">
-              Don't have an account? <a href="/register">Register here</a>
+              Don't have an account? <Link to="/register" onClick={onClose}>Register here</Link>
             </div>
           </form>
         </div>

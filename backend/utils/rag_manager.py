@@ -1,152 +1,65 @@
-"""RAG Manager using ChromaDB for context storage and retrieval"""
-import chromadb
-from chromadb.config import Settings
-import json
+"""Optional semantic memory for the classic builder (ChromaDB).
+
+ChromaDB is no longer used for anything authoritative (users and projects live
+in the relational database). If `chromadb` is installed it is used with a
+*persistent* client; otherwise this degrades to an in-process store so the
+app still runs without the heavy dependency.
+"""
+import logging
+import os
+from collections import defaultdict
 from datetime import datetime
 
+log = logging.getLogger("aidevs.rag")
+
+
 class RAGManager:
-    def __init__(self, persist_directory="./chroma_db"):
-        """Initialize ChromaDB for RAG storage"""
-        self.client = chromadb.Client(Settings(
-            persist_directory=persist_directory,
-            anonymized_telemetry=False
-        ))
-        
-        # Create or get collection for conversations
-        self.collection = self.client.get_or_create_collection(
-            name="aidevs_conversations",
-            metadata={"description": "AIDevs conversation history and context"}
-        )
-        
-        # Create or get collection for users
-        self.users_collection = self.client.get_or_create_collection(
-            name="aidevs_users",
-            metadata={"description": "AIDevs user accounts"}
-        )
-    
+    def __init__(self, persist_directory=None):
+        self.collection = None
+        self._fallback = defaultdict(list)
+        if os.getenv("ENABLE_CHROMADB", "0") != "1":
+            return
+        try:
+            import chromadb
+            path = persist_directory or os.getenv("CHROMA_PERSIST_DIRECTORY", "./chroma_db")
+            client = chromadb.PersistentClient(path=path)
+            self.collection = client.get_or_create_collection(name="aidevs_conversations")
+        except Exception as exc:  # optional component
+            log.warning("ChromaDB unavailable, using in-memory context store: %s", exc)
+
     def store_interaction(self, session_id, agent, message, response, stage):
-        """Store conversation interaction in vector database"""
-        # Create unique ID
-        interaction_id = f"{session_id}_{agent}_{datetime.now().isoformat()}"
-        
-        # Combine message and response for embedding
-        combined_text = f"User: {message}\n{agent}: {response}"
-        
-        # Store in ChromaDB
+        text = f"User: {message}\n{agent}: {response}"
+        if self.collection is None:
+            self._fallback[session_id].append({"agent": agent, "stage": stage, "text": text})
+            self._fallback[session_id] = self._fallback[session_id][-50:]
+            return
         self.collection.add(
-            documents=[combined_text],
-            metadatas=[{
-                "session_id": session_id,
-                "agent": agent,
-                "stage": stage,
-                "timestamp": datetime.now().isoformat(),
-                "message": message[:500],  # Truncate for metadata
-                "response": response[:500]
-            }],
-            ids=[interaction_id]
-        )
-    
+            documents=[text],
+            metadatas=[{"session_id": session_id, "agent": agent, "stage": stage,
+                        "timestamp": datetime.now().isoformat()}],
+            ids=[f"{session_id}_{agent}_{datetime.now().isoformat()}"])
+
     def retrieve_context(self, query, session_id, n_results=5):
-        """Retrieve relevant context from conversation history"""
         try:
-            results = self.collection.query(
-                query_texts=[query],
-                n_results=n_results,
-                where={"session_id": session_id}
-            )
-            
-            if not results['documents'] or not results['documents'][0]:
+            if self.collection is None:
+                items = self._fallback.get(session_id, [])[-n_results:]
+                return "\n\n".join(f"[{i['agent']} at {i['stage']}]: {i['text'][:300]}" for i in items)
+            results = self.collection.query(query_texts=[query], n_results=n_results,
+                                            where={"session_id": session_id})
+            if not results["documents"] or not results["documents"][0]:
                 return ""
-            
-            # Format context
-            context_parts = []
-            for doc, metadata in zip(results['documents'][0], results['metadatas'][0]):
-                context_parts.append(f"[{metadata['agent']} at {metadata['stage']}]: {doc[:300]}")
-            
-            return "\n\n".join(context_parts)
-        
-        except Exception as e:
-            print(f"RAG retrieval error: {e}")
+            return "\n\n".join(f"[{m['agent']} at {m['stage']}]: {d[:300]}"
+                               for d, m in zip(results["documents"][0], results["metadatas"][0], strict=False))
+        except Exception as exc:
+            log.warning("RAG retrieval error: %s", exc)
             return ""
-    
-    def get_session_history(self, session_id, limit=10):
-        """Get full session history"""
-        try:
-            results = self.collection.get(
-                where={"session_id": session_id},
-                limit=limit
-            )
-            
-            return results
-        except Exception as e:
-            print(f"Error getting session history: {e}")
-            return {"documents": [], "metadatas": []}
-    
+
     def clear_session(self, session_id):
-        """Clear all data for a session"""
-        try:
-            # Get all IDs for this session
-            results = self.collection.get(
-                where={"session_id": session_id}
-            )
-            
-            if results['ids']:
-                self.collection.delete(ids=results['ids'])
-        
-        except Exception as e:
-            print(f"Error clearing session: {e}")
-    
-    def get_latest_code(self, session_id, agent='frontend'):
-        """Retrieve latest generated code from specific agent"""
-        try:
-            results = self.collection.query(
-                query_texts=["code generation"],
-                n_results=1,
-                where={
-                    "session_id": session_id,
-                    "agent": agent
-                }
-            )
-            
-            if results['metadatas'] and results['metadatas'][0]:
-                return results['metadatas'][0][0].get('response', '')
-            
-            return ""
-        
-        except Exception as e:
-            print(f"Error getting latest code: {e}")
-            return ""
-    
-    def store_user(self, user_data):
-        """Store user account in ChromaDB"""
-        username = user_data['username']
-        
-        # Store user document
-        self.users_collection.upsert(
-            documents=[f"User: {username}"],
-            metadatas=[user_data],
-            ids=[username]
-        )
-    
-    def get_user(self, username):
-        """Retrieve user by username"""
-        try:
-            results = self.users_collection.get(
-                ids=[username]
-            )
-            
-            if results['metadatas'] and len(results['metadatas']) > 0:
-                return results['metadatas'][0]
-            
-            return None
-        
-        except Exception as e:
-            print(f"Error getting user: {e}")
-            return None
-    
-    def update_last_login(self, username):
-        """Update user's last login timestamp"""
-        user = self.get_user(username)
-        if user:
-            user['last_login'] = datetime.now().isoformat()
-            self.store_user(user)
+        self._fallback.pop(session_id, None)
+        if self.collection is not None:
+            try:
+                ids = self.collection.get(where={"session_id": session_id})["ids"]
+                if ids:
+                    self.collection.delete(ids=ids)
+            except Exception as exc:
+                log.warning("Error clearing session: %s", exc)

@@ -1,0 +1,93 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (lint, tests on SQLite + PostgreSQL, migrations, audit)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: aidevs
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: aidevs_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U aidevs" --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: backend/requirements*.txt
+      - name: Install
+        run: pip install -r requirements-dev.txt
+      - name: Lint (ruff incl. bandit security rules)
+        run: ruff check .
+      - name: Tests (SQLite)
+        run: python -m pytest -q
+      - name: Tests (PostgreSQL) incl. migration upgrade/downgrade with data
+        env:
+          TEST_DATABASE_URL: postgresql://aidevs:ci-only-password@localhost:5432/aidevs_test
+        run: python -m pytest -q
+      - name: Migrations apply cleanly from scratch
+        env:
+          DATABASE_URL: sqlite:///ci-migrate.db
+        run: python -m alembic upgrade head && python -m alembic check
+      - name: Dependency vulnerability audit
+        run: pip-audit -r requirements.txt --progress-spinner off
+
+  frontend:
+    name: Frontend (lint, tests, production build, audit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - name: Lint
+        run: npx eslint src --max-warnings=0
+      - name: Unit tests
+        run: npx react-scripts test --watchAll=false
+        env:
+          CI: "true"
+      - name: Production build (warnings fail the build)
+        run: npm run build
+        env:
+          CI: "true"
+          REACT_APP_API_URL: https://api.example.invalid
+      - name: Bundle must not contain secrets
+        run: |
+          if grep -rEq "gsk_[A-Za-z0-9]{20,}|GROQ_API_KEY|JWT_SECRET_KEY" build/static; then
+            echo "Secret-like string found in the frontend bundle"; exit 1; fi
+      - name: Dependency audit (production dependencies)
+        run: npm audit --omit=dev --audit-level=high
+
+  secrets:
+    name: Secret scanning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

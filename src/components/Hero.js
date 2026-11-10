@@ -5,7 +5,7 @@ const Hero = () => {
   const navigate = useNavigate();
 
   const handleGetStarted = () => {
-    navigate("/chatbot");
+    navigate("/projects");
   };
 
   return (

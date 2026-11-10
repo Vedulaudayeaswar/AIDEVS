@@ -41,7 +41,7 @@ const ChatPanel = ({
       <div className="chat-header">
         <div className="chat-title">
           <h2>AIDevs</h2>
-          <span className="subtitle">Your AI Website Builder</span>
+          <span className="subtitle">Classic builder · try the new Studio at /projects</span>
         </div>
         <div className="chat-actions">
           <button
@@ -124,28 +124,6 @@ const ChatPanel = ({
               </div>
               <div className="message-time">
                 {message.timestamp?.toLocaleTimeString()}
-                {message.usingDefaultKey && (
-                  <span
-                    style={{
-                      marginLeft: "10px",
-                      color: "#f39c12",
-                      fontSize: "11px",
-                    }}
-                  >
-                    ⚡ Using default Groq API
-                  </span>
-                )}
-                {!message.usingDefaultKey && message.role === "assistant" && (
-                  <span
-                    style={{
-                      marginLeft: "10px",
-                      color: "#27ae60",
-                      fontSize: "11px",
-                    }}
-                  >
-                    ✓ Using your Groq API
-                  </span>
-                )}
               </div>
             </div>
           </div>

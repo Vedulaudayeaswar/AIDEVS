@@ -1,35 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import "./ChatbotPage.css";
 import ChatPanel from "./ChatPanel";
 import PreviewPanel from "./PreviewPanel";
-import API_URL from "../config";
+import { api, apiFetch } from "../lib/api";
+import { useAuth } from "../auth/AuthContext";
 
 function ChatbotPage() {
-  const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
   const [previewCode, setPreviewCode] = useState({ html: "", css: "", js: "" });
   const [isLoading, setIsLoading] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { user } = useAuth();
+  const isAuthenticated = Boolean(user);
   const [downloadReady, setDownloadReady] = useState(false);
   const [backendReady, setBackendReady] = useState(false);
 
-  // Check authentication on mount
-  useEffect(() => {
-    const token = localStorage.getItem("aidevs_token");
-    if (!token) {
-      navigate("/register");
-      return;
-    }
-    setIsAuthenticated(true);
-  }, [navigate]);
 
   // Initial welcome message
   useEffect(() => {
     if (!isAuthenticated) return;
 
-    const username = localStorage.getItem("aidevs_username");
-    const firstName = username ? username.split(".")[0] : "there";
+    const firstName = user ? user.firstName : "there";
 
     setMessages([
       {
@@ -38,7 +28,7 @@ function ChatbotPage() {
         timestamp: new Date(),
       },
     ]);
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user]);
 
   const sendMessage = async (userMessage) => {
     // Add user message to chat
@@ -51,26 +41,7 @@ function ChatbotPage() {
     setIsLoading(true);
 
     try {
-      const token = localStorage.getItem("aidevs_token");
-
-      if (!token) {
-        navigate("/register");
-        return;
-      }
-
-      // Send to backend with JWT
-      const response = await fetch(`${API_URL}/api/chat`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          message: userMessage,
-        }),
-      });
-
-      const data = await response.json();
+      const data = await api.post("/api/chat", { message: userMessage });
 
       if (data.success) {
         // Add assistant response
@@ -99,7 +70,7 @@ function ChatbotPage() {
         ...prev,
         {
           role: "assistant",
-          content: `Error: ${error.message}. Please make sure the backend server is running.`,
+          content: `Error: ${error.message}. `,
           timestamp: new Date(),
         },
       ]);
@@ -110,18 +81,7 @@ function ChatbotPage() {
 
   const fetchPreview = async () => {
     try {
-      const token = localStorage.getItem("aidevs_token");
-
-      const response = await fetch(`${API_URL}/api/preview`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({}),
-      });
-
-      const data = await response.json();
+      const data = await api.post("/api/preview");
       if (data.success) {
         setPreviewCode({
           html: data.html,
@@ -139,18 +99,7 @@ function ChatbotPage() {
 
   const checkStatus = async () => {
     try {
-      const token = localStorage.getItem("aidevs_token");
-
-      const response = await fetch(`${API_URL}/api/status`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({}),
-      });
-
-      const data = await response.json();
+      const data = await api.post("/api/status");
       if (data.success) {
         setBackendReady(data.backend_ready);
         setDownloadReady(data.download_ready);
@@ -179,19 +128,10 @@ function ChatbotPage() {
     }
 
     try {
-      const token = localStorage.getItem("aidevs_token");
-      const username = localStorage.getItem("aidevs_username");
+      const response = await apiFetch("/api/download", { method: "POST", body: {}, raw: true });
+      const username = user ? user.username : "user";
 
-      const response = await fetch(`${API_URL}/api/download`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({}),
-      });
-
-      if (response.ok) {
+      {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
@@ -212,9 +152,6 @@ function ChatbotPage() {
             timestamp: new Date(),
           },
         ]);
-      } else {
-        const data = await response.json();
-        throw new Error(data.error || "Download failed");
       }
     } catch (error) {
       console.error("Download error:", error);
@@ -231,16 +168,7 @@ function ChatbotPage() {
 
   const resetSession = async () => {
     try {
-      const token = localStorage.getItem("aidevs_token");
-
-      await fetch(`${API_URL}/api/reset`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({}),
-      });
+      await api.post("/api/reset");
 
       // Reset local state
       setMessages([

@@ -1,48 +1,22 @@
 import React, { useEffect, useState } from "react";
+import { useAuth } from "../auth/AuthContext";
 import { useNavigate } from "react-router-dom";
 import LoginModal from "./LoginModal";
 
 const Header = () => {
   const navigate = useNavigate();
+  const { user, status, logout } = useAuth();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username, setUsername] = useState("");
+  const isLoggedIn = status === "authenticated" && user;
 
-  useEffect(() => {
-    // Check if user is logged in
-    const token = localStorage.getItem("aidevs_token");
-    const storedUsername = localStorage.getItem("aidevs_username");
-    if (token && storedUsername) {
-      setIsLoggedIn(true);
-      setUsername(storedUsername);
-    }
-  }, []);
-
-  const handleGetStarted = () => {
-    const token = localStorage.getItem("aidevs_token");
-    if (token) {
-      navigate("/chatbot");
-    } else {
-      navigate("/register");
-    }
-  };
-
-  const handleLogin = () => {
-    setIsLoginModalOpen(true);
-  };
-
-  const handleLoginSuccess = (data) => {
-    setIsLoggedIn(true);
-    setUsername(data.username);
+  const handleGetStarted = () => navigate(isLoggedIn ? "/projects" : "/register");
+  const handleLogin = () => setIsLoginModalOpen(true);
+  const handleLoginSuccess = () => {
     setIsLoginModalOpen(false);
-    navigate("/chatbot");
+    navigate("/projects");
   };
-
-  const handleLogout = () => {
-    localStorage.removeItem("aidevs_token");
-    localStorage.removeItem("aidevs_username");
-    setIsLoggedIn(false);
-    setUsername("");
+  const handleLogout = async () => {
+    await logout();
     navigate("/");
   };
 
@@ -83,9 +57,10 @@ const Header = () => {
         <div className="header-actions">
           {isLoggedIn ? (
             <>
-              <span className="username-display">
-                Hi, {username.split(".")[0]}
-              </span>
+              <span className="username-display">Hi, {user.firstName}</span>
+              <button className="btn-secondary" onClick={() => navigate("/projects")}>
+                My Projects
+              </button>
               <button className="btn-secondary" onClick={handleLogout}>
                 Logout
               </button>
@@ -96,7 +71,7 @@ const Header = () => {
             </button>
           )}
           <button className="btn-primary" onClick={handleGetStarted}>
-            Get Started
+            {isLoggedIn ? "Open Studio" : "Get Started"}
           </button>
         </div>
       </header>

@@ -137,8 +137,7 @@ Generate COMPLETE, PRODUCTION-READY Flask code that can run immediately."""
                     
                     print("📡 Calling Backend Agent...")
                     backend_response = self.backend_agent.generate_api(
-                        frontend_requirements=backend_requirements,
-                        context=user_api_key
+                        frontend_requirements=backend_requirements
                     )
                     
                     # Extract code from response
@@ -178,7 +177,7 @@ Generate COMPLETE, PRODUCTION-READY Flask code that can run immediately."""
                         print("❌ Test generation returned empty!")
                     
                     print("="*60)
-                    print(f"📊 SUMMARY:")
+                    print("📊 SUMMARY:")
                     print(f"   Frontend: {len(combined_html)} chars")
                     print(f"   Backend: {len(session.get('backend_code', ''))} chars")
                     print(f"   Tests: {len(str(session.get('test_results', '')))} chars")
@@ -192,7 +191,7 @@ Generate COMPLETE, PRODUCTION-READY Flask code that can run immediately."""
                 'stage': result['stage'],
                 'has_preview': bool(session['frontend_code'])
             }
-        except Exception as e:
+        except Exception:
             import traceback
             print("ERROR in orchestrator.process_message:")
             print(traceback.format_exc())
@@ -226,7 +225,9 @@ Generate COMPLETE, PRODUCTION-READY Flask code that can run immediately."""
         return {'html': combined_html, 'css': '', 'js': ''}
     
     def generate_download_package(self, session_id):
-        import zipfile, io, os
+        import zipfile
+        import io
+        import os
         if session_id not in self.sessions:
             return None
         session = self.sessions[session_id]

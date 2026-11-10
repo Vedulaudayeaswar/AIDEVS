@@ -1,369 +1,261 @@
-"""Flask Backend API for AIDevs"""
-from flask import Flask, request, jsonify, send_file
-from flask_cors import CORS
-from flask_jwt_extended import (
-    JWTManager, create_access_token, 
-    jwt_required, get_jwt_identity
-)
-from dotenv import load_dotenv
-import os
-from datetime import timedelta
-from agents.orchestrator import AIDevsOrchestrator
-from utils.rag_manager import RAGManager
-from utils.auth_manager import AuthManager
-from concurrent.futures import ThreadPoolExecutor
-import asyncio
-from functools import wraps
+"""AIDevs 2.0 backend (Flask application factory).
 
-# Load environment variables
+Run locally:   python app.py
+Production:    gunicorn -k gevent -w 1 --timeout 180 "app:create_app()"   (see render.yaml)
+"""
+import logging
+import os
+
+from dotenv import load_dotenv
+
 load_dotenv()
 
-app = Flask(__name__)
-CORS(app)
+from flask import Flask, jsonify, request  # noqa: E402
+from flask_cors import CORS  # noqa: E402
+from flask_jwt_extended import JWTManager  # noqa: E402
+from sqlalchemy import select  # noqa: E402
 
-# ===== CONCURRENCY & PARALLELISM ARCHITECTURE =====
-# Thread pool for non-blocking I/O operations
-executor = ThreadPoolExecutor(max_workers=10)
+import db as database  # noqa: E402
+from config import Config  # noqa: E402
 
-def async_route(f):
-    """Decorator to run routes asynchronously using thread pool"""
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        return executor.submit(f, *args, **kwargs).result()
-    return decorated_function
-# ==================================================
+VERSION = "2.0.0"
 
-# JWT Configuration
-app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'aidevs-secret-key-change-in-production')
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=24)
-jwt = JWTManager(app)
 
-# Initialize orchestrator and RAG
-rag_manager = RAGManager()
-auth_manager = AuthManager(rag_manager)
-orchestrator = AIDevsOrchestrator(rag_manager)
+def run_migrations(url):
+    from alembic import command
+    from alembic.config import Config as AlembicConfig
 
-@app.route('/api/auth/register', methods=['POST'])
-def register():
-    """Register new user"""
-    try:
-        data = request.json
-        first_name = data.get('firstName', '').strip()
-        middle_name = data.get('middleName', '').strip()
-        last_name = data.get('lastName', '').strip()
-        password = data.get('password', '')
-        api_key = data.get('apiKey', '').strip()
-        
-        result = auth_manager.register_user(
-            first_name, middle_name, last_name, 
-            password, api_key
-        )
-        
-        if result['success']:
-            # Create JWT token
-            access_token = create_access_token(identity=result['username'])
-            return jsonify({
-                'success': True,
-                'username': result['username'],
-                'message': result['message'],
-                'token': access_token
-            })
+    here = os.path.dirname(os.path.abspath(__file__))
+    cfg = AlembicConfig(os.path.join(here, "alembic.ini"))
+    cfg.set_main_option("script_location", os.path.join(here, "migrations"))
+    cfg.set_main_option("sqlalchemy.url", url.replace("%", "%%"))
+    command.upgrade(cfg, "head")
+
+
+def create_app(config_object=None):
+    config_object = config_object or Config
+    config_object.validate()
+    from services.logging_setup import configure, install_request_logging
+    configure(config_object.IS_PRODUCTION)
+
+    app = Flask(__name__)
+    app.config.from_object(config_object)
+    hops = int(os.getenv("TRUST_PROXY_HOPS", "1" if config_object.IS_PRODUCTION else "0"))
+    if hops > 0:
+        from werkzeug.middleware.proxy_fix import ProxyFix
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=hops, x_proto=hops)
+    app.json.sort_keys = False
+
+    database.init_engine(app.config["SQLALCHEMY_DATABASE_URI"])
+    import models  # noqa: F401  (register tables)
+    if not app.config.get("TESTING"):
+        database.wait_for_db()  # free serverless Postgres may be waking from scale-to-zero
+    if app.config.get("AUTO_MIGRATE"):
+        run_migrations(database.normalize_url(app.config["SQLALCHEMY_DATABASE_URI"]))
+    elif app.config.get("TESTING"):
+        database.Base.metadata.create_all(database.engine)
+
+    CORS(app, origins=app.config["CORS_ORIGINS"], methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+         allow_headers=["Content-Type", "Authorization"], supports_credentials=False, max_age=600)
+
+    jwt = JWTManager(app)
+
+    @jwt.user_lookup_loader
+    def _load_user(_header, payload):
+        from models import User
+        user = database.get_session().get(User, payload["sub"])
+        return user if user and user.is_active else None
+
+    @jwt.token_in_blocklist_loader
+    def _revoked(_header, payload):
+        from models import RevokedAccessToken
+        return database.get_session().get(RevokedAccessToken, payload["jti"]) is not None
+
+    @jwt.user_lookup_error_loader
+    def _user_missing(_header, _payload):
+        return jsonify(success=False, error="Account not found. Please log in again."), 401
+
+    @jwt.expired_token_loader
+    def _expired(_header, _payload):
+        return jsonify(success=False, error="Session expired", code="token_expired"), 401
+
+    @jwt.invalid_token_loader
+    def _invalid(reason):
+        return jsonify(success=False, error="Invalid session token", code="token_invalid"), 401
+
+    @jwt.unauthorized_loader
+    def _missing(reason):
+        return jsonify(success=False, error="Authentication required", code="auth_required"), 401
+
+    @jwt.revoked_token_loader
+    def _revoked_resp(_header, _payload):
+        return jsonify(success=False, error="Session ended. Please log in again.", code="token_revoked"), 401
+
+    install_request_logging(app)
+    from api.admin import bp as admin_bp
+    from api.assets import bp as assets_bp
+    from api.auth import bp as auth_bp
+    from api.common import ApiError
+    from api.legacy import bp as legacy_bp
+    from api.projects import bp as projects_bp
+    from services.ai_client import AIError
+    for blueprint in (auth_bp, projects_bp, assets_bp, legacy_bp, admin_bp):
+        app.register_blueprint(blueprint)
+
+    @app.errorhandler(ApiError)
+    def _api_error(exc):
+        database.get_session().rollback()
+        return jsonify(success=False, error=exc.message, **exc.extra), exc.status
+
+    from services.jobs import JobConflict
+    from services.limits import LimitExceeded
+
+    @app.errorhandler(LimitExceeded)
+    def _limit(exc):
+        database.get_session().rollback()
+        return jsonify(success=False, error=exc.message, code="limit_exceeded"), exc.status
+
+    @app.errorhandler(JobConflict)
+    def _conflict(exc):
+        database.get_session().rollback()
+        return jsonify(success=False, error=str(exc), code="job_conflict"), 409
+
+    from sqlalchemy.exc import DBAPIError, OperationalError
+    from sqlalchemy.exc import TimeoutError as PoolTimeout
+
+    @app.errorhandler(OperationalError)
+    @app.errorhandler(PoolTimeout)
+    def _db_unavailable(exc):
+        """Database waking up / briefly unreachable: tell the client to retry, never 500."""
+        try:
+            database.get_session().rollback()
+        except Exception as rollback_exc:
+            logging.getLogger("aidevs.db").warning("rollback after DB error failed: %s", rollback_exc)
+        logging.getLogger("aidevs.db").warning("database unavailable: %s", exc.__class__.__name__)
+        response = jsonify(success=False, code="db_unavailable",
+                           error="The database is waking up or briefly unavailable. Please retry in a few seconds.")
+        response.headers["Retry-After"] = "5"
+        return response, 503
+
+    @app.errorhandler(DBAPIError)
+    def _db_error(exc):
+        if getattr(exc, "connection_invalidated", False):
+            return _db_unavailable(exc)
+        database.get_session().rollback()
+        logging.getLogger("aidevs").exception("Database error on %s %s", request.method, request.path)
+        return jsonify(success=False, error="Internal server error"), 500
+
+    @app.errorhandler(AIError)
+    def _ai_error(exc):
+        database.get_session().rollback()
+        logging.getLogger("aidevs.ai").warning("AI error surfaced to client: %s", exc)
+        retry = getattr(exc, "retry_after", None)
+        code = "ai_capacity" if exc.__class__.__name__ in ("AIRateLimited", "AICapacityExhausted") else "ai_error"
+        response = jsonify(success=False, error=exc.user_message, code=code, retryAfter=retry)
+        if retry:
+            response.headers["Retry-After"] = str(int(retry))
+        return response, exc.status
+
+    @app.errorhandler(404)
+    def _not_found(_e):
+        return jsonify(success=False, error="Not found"), 404
+
+    @app.errorhandler(405)
+    def _method(_e):
+        return jsonify(success=False, error="Method not allowed"), 405
+
+    @app.errorhandler(413)
+    def _too_large(_e):
+        return jsonify(success=False, error="Request too large"), 413
+
+    @app.errorhandler(Exception)
+    def _unhandled(exc):
+        from werkzeug.exceptions import HTTPException
+        if isinstance(exc, HTTPException):
+            return jsonify(success=False, error=exc.description), exc.code
+        database.get_session().rollback()
+        logging.getLogger("aidevs").exception("Unhandled error on %s %s", request.method, request.path)
+        return jsonify(success=False, error="Internal server error"), 500
+
+    @app.after_request
+    def _security_headers(response):
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+        response.headers.setdefault("X-Frame-Options", "DENY")
+        if app.config.get("IS_PRODUCTION"):
+            response.headers.setdefault("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+        return response
+
+    @app.teardown_appcontext
+    def _remove_session(_exc):
+        database.SessionLocal.remove()
+
+    def _db_ok():
+        try:
+            database.get_session().execute(select(1))
+            return True
+        except Exception as exc:
+            logging.getLogger("aidevs.health").error("database check failed: %s", exc.__class__.__name__)
+            database.get_session().rollback()
+            return False
+
+    def _migration_state():
+        try:
+            from alembic.runtime.migration import MigrationContext
+            from alembic.script import ScriptDirectory
+            from alembic.config import Config as AlembicConfig
+            here = os.path.dirname(os.path.abspath(__file__))
+            cfg = AlembicConfig(os.path.join(here, "alembic.ini"))
+            cfg.set_main_option("script_location", os.path.join(here, "migrations"))
+            head = ScriptDirectory.from_config(cfg).get_current_head()
+            with database.engine.connect() as conn:
+                current = MigrationContext.configure(conn).get_current_revision()
+            return {"current": current, "head": head, "upToDate": current == head}
+        except Exception as exc:
+            return {"error": exc.__class__.__name__, "upToDate": app.config.get("TESTING", False)}
+
+    @app.get("/api/health/live")
+    def live():
+        """Liveness: the process is up and serving (no dependencies checked)."""
+        return jsonify(status="alive", version=VERSION)
+
+    @app.get("/api/health/ready")
+    def ready():
+        """Readiness: database reachable, schema migrated, worker alive (if in-process)."""
+        from services import jobs
+        from services.ai_client import get_ai_client
+        db_ok = _db_ok()
+        if app.config.get("TESTING") and not app.config.get("AUTO_MIGRATE"):
+            migrations = {"upToDate": True, "note": "test schema created without Alembic"}
         else:
-            return jsonify(result), 400
-    
-    except Exception as e:
-        import traceback
-        print("ERROR in /api/auth/register:")
-        print(traceback.format_exc())
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
+            migrations = _migration_state() if db_ok else {"upToDate": False}
+        beat = jobs.heartbeat()
+        in_process = os.getenv("RUN_WORKER_IN_PROCESS", "1") == "1" and not app.config.get("TESTING")
+        worker_ok = (not in_process) or (beat is not None and (jobs.now() - beat).total_seconds() < 30)
+        ok = db_ok and migrations.get("upToDate", False) and worker_ok
+        body = {"status": "ready" if ok else "not_ready", "database": db_ok, "migrations": migrations,
+                "worker": {"inProcess": in_process, "lastHeartbeat": beat.isoformat() if beat else None,
+                           "ok": worker_ok},
+                "aiConfigured": get_ai_client().configured}
+        return jsonify(body), (200 if ok else 503)
 
-@app.route('/api/auth/login', methods=['POST'])
-def login():
-    """Login existing user"""
-    try:
-        data = request.json
-        username = data.get('username', '').strip().lower()
-        password = data.get('password', '')
-        
-        result = auth_manager.login_user(username, password)
-        
-        if result['success']:
-            # Create JWT token
-            access_token = create_access_token(identity=username)
-            return jsonify({
-                'success': True,
-                'username': username,
-                'firstName': result['first_name'],
-                'lastName': result['last_name'],
-                'message': result['message'],
-                'token': access_token
-            })
-        else:
-            return jsonify(result), 401
-    
-    except Exception as e:
-        import traceback
-        print("ERROR in /api/auth/login:")
-        print(traceback.format_exc())
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
+    @app.get("/api/health")
+    def health():
+        """Backwards-compatible summary (used by Render's health check)."""
+        from services.ai_client import get_ai_client
+        db_ok = _db_ok()
+        return jsonify(status="healthy" if db_ok else "degraded", service="AIDevs Backend", version=VERSION,
+                       database=db_ok, ai_configured=get_ai_client().configured), (200 if db_ok else 503)
 
-@app.route('/api/auth/validate-password', methods=['POST'])
-def validate_password():
-    """Validate password in real-time"""
-    try:
-        data = request.json
-        password = data.get('password', '')
-        
-        validation = auth_manager.validate_password(password)
-        return jsonify(validation)
-    
-    except Exception as e:
-        return jsonify({
-            'valid': False,
-            'error': str(e)
-        }), 500
+    if not app.config.get("TESTING"):
+        # Jobs are durable: queued/expired work is picked up again by a worker.
+        from services.jobs import ensure_worker, release_stale_locks
+        release_stale_locks()
+        ensure_worker()
+    return app
 
-@app.route('/api/chat', methods=['POST'])
-@jwt_required()
-def chat():
-    """Handle chat messages from frontend"""
-    try:
-        # Get authenticated user
-        username = get_jwt_identity()
-        
-        # Get user's API key
-        user_api_key = auth_manager.get_user_api_key(username)
-        using_default = False
-        
-        if not user_api_key:
-            # Fallback to default API key from .env
-            user_api_key = os.getenv('GROQ_API_KEY')
-            using_default = True
-            print(f"⚠️  User {username} has no API key - using DEFAULT Groq key")
-        else:
-            print(f"✅ Using {username}'s PERSONAL Groq API key: {user_api_key[:20]}...")
-        
-        if not user_api_key:
-            print(f"ERROR: No API key available for user {username}")
-            return jsonify({
-                'success': False,
-                'error': 'No API key configured'
-            }), 401
-        
-        data = request.json
-        user_message = data.get('message', '')
-        session_id = f"{username}_session"  # User-specific session
 
-        if not user_message:
-            return jsonify({
-                'success': False,
-                'error': 'Message is required'
-            }), 400
-
-        # Process message through orchestrator with user's API key
-        response = orchestrator.process_message(
-            user_message, session_id, user_api_key
-        )
-
-        return jsonify({
-            'success': True,
-            'response': response['message'],
-            'stage': response['stage'],
-            'has_preview': response['has_preview'],
-            'using_default_key': using_default  # Tell frontend which key is being used
-        })
-    except Exception as e:
-        import traceback
-        print("ERROR in /api/chat:")
-        print(traceback.format_exc())
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
-
-@app.route('/api/preview', methods=['POST'])
-@jwt_required()
-def get_preview():
-    """Get current website preview code"""
-    try:
-        username = get_jwt_identity()
-        session_id = f"{username}_session"
-        preview_code = orchestrator.get_preview_code(session_id)
-
-        return jsonify({
-            'success': True,
-            'html': preview_code.get('html', ''),
-            'css': preview_code.get('css', ''),
-            'js': preview_code.get('js', '')
-        })
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
-
-@app.route('/api/download', methods=['POST'])
-@jwt_required()
-def download_code():
-    """Generate and return downloadable zip file"""
-    try:
-        username = get_jwt_identity()
-        session_id = f"{username}_session"
-        
-        # Check if session exists and has backend code
-        if session_id not in orchestrator.sessions:
-            return jsonify({
-                'success': False,
-                'error': 'No active session. Please build your website first.'
-            }), 404
-        
-        session = orchestrator.sessions[session_id]
-        backend_code = session.get('backend_code', '')
-        frontend_code = session.get('frontend_code', {})
-        
-        # Validate that we have both frontend and backend
-        if not frontend_code:
-            return jsonify({
-                'success': False,
-                'error': 'No frontend code available. Please build your website first.'
-            }), 400
-        
-        if not backend_code or len(backend_code) < 100:
-            return jsonify({
-                'success': False,
-                'error': 'Backend code is still being generated. Please wait for the complete build to finish.',
-                'backend_ready': False
-            }), 400
-        
-        zip_filename = orchestrator.generate_download_package(session_id)
-
-        if not zip_filename:
-            return jsonify({
-                'success': False,
-                'error': 'Failed to generate download package'
-            }), 500
-
-        zip_path = os.path.join('downloads', zip_filename)
-        
-        return send_file(
-            zip_path,
-            mimetype='application/zip',
-            as_attachment=True,
-            download_name=zip_filename
-        )
-    except Exception as e:
-        import traceback
-        print("ERROR in /api/download:")
-        print(traceback.format_exc())
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
-
-@app.route('/api/status', methods=['POST'])
-@jwt_required()
-def get_status():
-    """Get current session status including backend generation"""
-    try:
-        username = get_jwt_identity()
-        session_id = f"{username}_session"
-        
-        if session_id not in orchestrator.sessions:
-            return jsonify({
-                'success': True,
-                'has_session': False,
-                'frontend_ready': False,
-                'backend_ready': False,
-                'download_ready': False
-            })
-        
-        session = orchestrator.sessions[session_id]
-        frontend_code = session.get('frontend_code', {})
-        backend_code = session.get('backend_code', '')
-        
-        has_frontend = bool(frontend_code)
-        has_backend = bool(backend_code and len(backend_code) > 100)
-        download_ready = has_frontend and has_backend
-        
-        return jsonify({
-            'success': True,
-            'has_session': True,
-            'frontend_ready': has_frontend,
-            'backend_ready': has_backend,
-            'download_ready': download_ready,
-            'current_stage': session.get('current_stage', 'initial'),
-            'sections_completed': list(frontend_code.keys())
-        })
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
-
-@app.route('/api/reset', methods=['POST'])
-@jwt_required()
-def reset_session():
-    """Clear session and start fresh"""
-    try:
-        username = get_jwt_identity()
-        session_id = f"{username}_session"
-        
-        # Clear from orchestrator
-        if session_id in orchestrator.sessions:
-            del orchestrator.sessions[session_id]
-        
-        # Clear from RAG
-        rag_manager.clear_session(session_id)
-
-        return jsonify({
-            'success': True,
-            'message': 'Session reset! Let\'s build something new. What kind of website would you like to create?'
-        })
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
-
-@app.route('/api/health', methods=['GET'])
-def health_check():
-    """Health check endpoint"""
-    return jsonify({
-        'status': 'healthy',
-        'service': 'AIDevs Backend',
-        'version': '1.0.0'
-    })
-
-if __name__ == '__main__':
-    # Create downloads directory if it doesn't exist
-    os.makedirs('downloads', exist_ok=True)
-    
-    # Get port from environment variable (for Render) or use 5000
-    port = int(os.getenv('PORT', 5000))
-    
-    print("=" * 60)
-    print("🚀 AIDevs Backend - High-Performance Architecture")
-    print("=" * 60)
-    print("✅ Concurrency: ThreadPoolExecutor with 10 workers")
-    print("✅ Non-blocking I/O: Async route handling")
-    print("✅ Event-driven: Flask with multi-threaded request handling")
-    print("✅ Load balancing ready: Production deployment with Gunicorn/uWSGI")
-    print(f"✅ Running on port: {port}")
-    print("=" * 60)
-    
-    # Run Flask server with multi-threaded support
-    # In production, use: gunicorn -w 4 -k gevent --worker-connections 1000 app:app
-    app.run(
-        debug=os.getenv('FLASK_ENV') != 'production',
-        host='0.0.0.0', 
-        port=port,
-        threaded=True,  # Enable multi-threading for concurrent request handling
-        use_reloader=os.getenv('FLASK_ENV') != 'production'
-    )
-
+if __name__ == "__main__":
+    application = create_app()
+    application.run(host="0.0.0.0", port=int(os.getenv("PORT", "5000")),
+                    debug=not Config.IS_PRODUCTION, use_reloader=False, threaded=True)

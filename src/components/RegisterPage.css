@@ -232,3 +232,6 @@
     font-size: 16px; /* Prevents zoom on iOS */
   }
 }
+
+.terms-note { font-size: 12px; color: rgba(255, 255, 255, 0.6); line-height: 1.5; margin: 4px 0 0; }
+.terms-note a { color: #00ffff; }

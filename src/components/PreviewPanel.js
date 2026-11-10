@@ -1,15 +1,12 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import "./PreviewPanel.css";
 
-const PreviewPanel = ({ html, css, js }) => {
+const PreviewPanel = ({ html }) => {
   const iframeRef = useRef(null);
 
-  useEffect(() => {
-    if (iframeRef.current) {
-      const iframe = iframeRef.current;
-      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-
-      // Combine HTML, CSS, and JS into complete document
+  const [nonce, setNonce] = React.useState(0);
+  // Rendered via srcDoc in an opaque-origin sandbox (no allow-same-origin).
+  const doc = React.useMemo(() => {
       const fullHTML =
         html ||
         `
@@ -59,11 +56,8 @@ const PreviewPanel = ({ html, css, js }) => {
         </html>
       `;
 
-      iframeDoc.open();
-      iframeDoc.write(fullHTML);
-      iframeDoc.close();
-    }
-  }, [html, css, js]);
+      return fullHTML;
+  }, [html]);
 
   return (
     <div className="preview-panel">
@@ -78,9 +72,7 @@ const PreviewPanel = ({ html, css, js }) => {
           <button
             className="control-btn"
             onClick={() => {
-              if (iframeRef.current) {
-                iframeRef.current.contentWindow.location.reload();
-              }
+              setNonce((n) => n + 1);
             }}
             title="Refresh Preview"
           >
@@ -101,7 +93,9 @@ const PreviewPanel = ({ html, css, js }) => {
         <iframe
           ref={iframeRef}
           title="Website Preview"
-          sandbox="allow-scripts allow-same-origin"
+          key={nonce}
+          srcDoc={doc}
+          sandbox="allow-scripts"
           className="preview-iframe"
         />
       </div>

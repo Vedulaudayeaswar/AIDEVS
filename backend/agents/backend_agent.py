@@ -1,7 +1,7 @@
 """Backend Engineer Agent - Generates Flask/Python backend code"""
 from .base_agent import BaseAgent
 
-BACKEND_SYSTEM_PROMPT = """You are a Backend Engineer generating production-ready Flask APIs.
+BACKEND_SYSTEM_PROMPT = r"""You are a Backend Engineer generating production-ready Flask APIs.
 
 CRITICAL: Generate COMPLETE, RUNNABLE code that works immediately.
 
@@ -84,8 +84,7 @@ Generate COMPLETE, PRODUCTION-READY Flask code that:
 
 OUTPUT ONLY THE PYTHON CODE, NO EXPLANATIONS."""
         
-        # Ensure API key (passed in `context`) is forwarded as `api_key`
-        response = self.generate_response(prompt, api_key=context)
+        response = self.generate_response(prompt, context=context)
         
         # Extract code from potential markdown code blocks
         if '```python' in response:

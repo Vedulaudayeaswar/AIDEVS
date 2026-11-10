@@ -1,13 +1,5 @@
-# Production Deployment Script
-
-# Install production dependencies
+#!/usr/bin/env bash
+# Production start (same command Render uses). Migrations run on boot via AUTO_MIGRATE.
+set -euo pipefail
 pip install -r requirements.txt
-
-# Option 1: Run with Gunicorn (Event-driven, non-blocking I/O)
-gunicorn -w 1 -k gevent --worker-connections 1000 --bind 0.0.0.0:5000 app:app
-
-# Option 2: Run with uWSGI (Thread pool)
-# uwsgi --http :5000 --wsgi-file app.py --callable app --threads 4 --processes 2
-
-# Option 3: Development mode
-# python app.py
+exec gunicorn -k gevent -w 1 --worker-connections 200 --timeout 180 --bind "0.0.0.0:${PORT:-5000}" "app:create_app()"

@@ -1,16 +1,28 @@
-flask==3.0.0
-flask-cors==4.0.0
-python-dotenv==1.0.0
-groq>=0.4.0
-langchain>=0.1.0
-langgraph>=0.0.20
-chromadb>=0.4.22
-sentence-transformers>=2.2.2
-tiktoken>=0.5.2
-flask-jwt-extended==4.6.0
-bcrypt==4.1.2
-cryptography==41.0.7
-
-# Production server with async/event-driven support
-gunicorn==21.2.0
-gevent==23.9.1
+# Exact pins for reproducible builds. Update via Dependabot PRs (CI re-runs everything).
+# --- web ---
+flask==3.1.3
+flask-cors==6.0.5
+flask-jwt-extended==4.7.1
+python-dotenv==1.2.4
+# --- data ---
+sqlalchemy==2.0.36
+alembic==1.14.0
+psycopg2-binary==2.9.10
+# --- security ---
+bcrypt==4.2.0
+# --- AI (single platform Groq key) ---
+groq==0.37.1
+# --- crawler / assets ---
+urllib3==2.8.0
+certifi==2026.10.23
+beautifulsoup4==4.13.4
+pillow==13.0.0
+# --- optional shared rate limiting (used only when REDIS_URL is set) ---
+redis==5.2.1
+# --- generated-project test tooling (export validation) ---
+flask-sqlalchemy==3.1.1
+pytest==9.2.0
+# --- production server (event-driven) ---
+gunicorn==22.0.0
+gevent==24.2.1
+# Optional semantic memory for the classic builder: pip install chromadb && set ENABLE_CHROMADB=1

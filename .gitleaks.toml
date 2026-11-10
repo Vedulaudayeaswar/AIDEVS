@@ -1,0 +1,11 @@
+# gitleaks configuration (used by CI and the optional pre-commit hook).
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Deliberately fake secrets used by tests to prove redaction and non-disclosure"
+paths = [
+  '''backend/tests/test_platform\.py''',
+  '''backend/tests/conftest\.py''',
+  '''backend/config\.py''',
+]
