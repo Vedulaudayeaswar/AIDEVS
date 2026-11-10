@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import "./ProjectsPage.css";
+import "./ProjectsTheme.css";
 
 export const LEGAL_DOCS = {
   terms: "Terms of Service",

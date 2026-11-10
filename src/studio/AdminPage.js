@@ -3,6 +3,7 @@ import { Link, Navigate } from "react-router-dom";
 import { api } from "../lib/api";
 import { useAuth } from "../auth/AuthContext";
 import "./ProjectsPage.css";
+import "./ProjectsTheme.css";
 
 // Operator console. The server independently enforces admin access (404 for others).
 export default function AdminPage() {

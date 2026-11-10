@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { api, apiFetch, setSession } from "../lib/api";
 import { useAuth } from "../auth/AuthContext";
 import "./ProjectsPage.css";
+import "./ProjectsTheme.css";
 
 function Meter({ label, used, limit, format = (v) => v }) {
   const pct = limit ? Math.min(100, Math.round((used / limit) * 100)) : 0;

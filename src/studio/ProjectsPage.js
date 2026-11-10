@@ -4,6 +4,7 @@ import { api } from "../lib/api";
 import { useAuth } from "../auth/AuthContext";
 import { plural } from "./Panels";
 import "./ProjectsPage.css";
+import "./ProjectsTheme.css";
 
 const EXAMPLES = [
   "A modern e-commerce website for a premium sneaker brand with product catalog and wishlist.",
