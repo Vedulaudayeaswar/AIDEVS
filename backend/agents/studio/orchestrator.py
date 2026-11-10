@@ -38,7 +38,7 @@ def entity_dicts(entities):
 def create_project_from_spec(session, user, spec, prompt="", reference_url=""):
     project = Project(owner_id=user.id, name=spec["name"], description=spec.get("summary", ""),
                       prompt=prompt, reference_url=reference_url or "", spec=spec,
-                      tokens=sanitize_tokens(spec.get("tokens")), status="draft")
+                      tokens=sanitize_tokens(spec.get("tokens"), ensure_contrast=True), status="draft")
     session.add(project)
     session.flush()
     for i, ent in enumerate(spec.get("entities", [])):
@@ -219,7 +219,7 @@ def apply_feature_plan(session, project, plan, user_id):
                 merged.setdefault(key, {}).update(value)
             else:
                 merged[key] = value
-        project.tokens = sanitize_tokens(merged)
+        project.tokens = sanitize_tokens(merged, ensure_contrast=True)
         changed.append("updated design tokens")
     for note in plan["remember"]:
         memory.remember(session, project.id, "decision", note)

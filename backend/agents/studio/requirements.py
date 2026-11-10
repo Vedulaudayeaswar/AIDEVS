@@ -97,7 +97,7 @@ def validate_spec(data):
         "name": name, "summary": str(data.get("summary", ""))[:600],
         "site_type": str(data.get("site_type", ""))[:60], "audience": str(data.get("audience", ""))[:300],
         "brand": {"voice": str(brand.get("voice", ""))[:200], "tagline": str(brand.get("tagline", ""))[:200]},
-        "tokens": sanitize_tokens(data.get("tokens")),
+        "tokens": sanitize_tokens(data.get("tokens"), ensure_contrast=True),
         "pages": pages, "entities": entities,
         "features": strs("features"), "user_journeys": strs("user_journeys"),
         "auth": {"required": bool(auth.get("required")), "notes": str(auth.get("notes", ""))[:300]},

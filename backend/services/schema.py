@@ -452,7 +452,50 @@ DEFAULT_TOKENS = {
 }
 
 
-def sanitize_tokens(tokens):
+def _luminance(hex_color):
+    h = hex_color.strip().lstrip("#")
+    if len(h) in (3, 4):
+        h = "".join(c * 2 for c in h[:3])
+    if len(h) not in (6, 8):
+        return None
+    try:
+        rgb = [int(h[i:i + 2], 16) / 255 for i in (0, 2, 4)]
+    except ValueError:
+        return None
+    lin = [c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4 for c in rgb]
+    return 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2]
+
+
+def contrast_ratio(a, b):
+    la, lb = _luminance(a), _luminance(b)
+    if la is None or lb is None:
+        return None
+    hi, lo = max(la, lb), min(la, lb)
+    return (hi + 0.05) / (lo + 0.05)
+
+
+# (foreground, background, minimum ratio, light replacement, dark replacement)
+_CONTRAST_PAIRS = (
+    ("text", "background", 4.5, "#f1f5f9", "#0f172a"),
+    ("muted", "background", 3.0, "#94a3b8", "#475569"),
+    ("onPrimary", "primary", 4.5, "#ffffff", "#0f172a"),
+)
+
+
+def enforce_contrast(colors):
+    """Replace AI-chosen colour pairs that would be unreadable (e.g. dark grey text on navy)."""
+    for fg, bg, minimum, light, dark in _CONTRAST_PAIRS:
+        if fg not in colors or bg not in colors:
+            continue
+        ratio = contrast_ratio(colors[fg], colors[bg])
+        if ratio is None or ratio >= minimum:
+            continue
+        bg_lum = _luminance(colors[bg])
+        colors[fg] = light if bg_lum < 0.18 else dark
+    return colors
+
+
+def sanitize_tokens(tokens, ensure_contrast=False):
     tokens = tokens if isinstance(tokens, dict) else {}
     out = copy.deepcopy(DEFAULT_TOKENS)
     colors = tokens.get("colors") if isinstance(tokens.get("colors"), dict) else {}
@@ -469,6 +512,8 @@ def sanitize_tokens(tokens):
         value = tokens.get(key)
         if isinstance(value, str) and re.match(r"^\d{1,4}(px|rem|em|%)$", value.strip()):
             out[key] = value.strip()
+    if ensure_contrast:
+        enforce_contrast(out["colors"])
     return out
 
 

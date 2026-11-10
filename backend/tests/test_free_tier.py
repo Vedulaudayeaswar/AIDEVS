@@ -380,3 +380,15 @@ def test_ai_made_duplicate_navbar_and_footer_are_dropped():
     tree = make_validator({})(data)["tree"]
     assert [c["name"] for c in tree["children"]] == ["Hero"]
     assert tree["children"][0]["children"][0]["tag"] == "h1"  # heading normalised to the page's h1
+
+
+def test_ai_tokens_fix_unreadable_contrast():
+    from services.schema import contrast_ratio, sanitize_tokens
+    bad = {"colors": {"primary": "#00BFFF", "background": "#0A1F44", "text": "#4e535a",
+                      "muted": "#1f2a44", "onPrimary": "#00BFFF"}}
+    fixed = sanitize_tokens(bad, ensure_contrast=True)["colors"]
+    assert contrast_ratio(fixed["text"], fixed["background"]) >= 4.5
+    assert contrast_ratio(fixed["muted"], fixed["background"]) >= 3.0
+    assert contrast_ratio(fixed["onPrimary"], fixed["primary"]) >= 4.5
+    # a user's manual choice in the editor is kept as-is
+    assert sanitize_tokens(bad)["colors"]["text"] == "#4e535a"
