@@ -13,6 +13,7 @@ import {
   replaceNode, ungroupNode, updateNode, updateProps, updateStyles,
 } from "./treeOps";
 import "./Studio.css";
+import "./StudioTheme.css";
 
 // Local safety net for unsaved edits (per page). Cleared once the server confirms a save.
 const draftKey = (pageId) => `aidevs_draft_${pageId}`;
