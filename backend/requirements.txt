@@ -11,7 +11,7 @@ psycopg2-binary==2.9.10
 # --- security ---
 bcrypt==4.2.0
 # --- AI (single platform Groq key) ---
-groq==0.37.1
+groq==1.7.0
 # --- crawler / assets ---
 urllib3==2.8.0
 certifi==2026.10.23
