@@ -62,3 +62,8 @@ build/
 %temp%/
 backend/downloads/
 coverage/
+
+# Python virtual environments
+.venv/
+**/.venv/
+venv/

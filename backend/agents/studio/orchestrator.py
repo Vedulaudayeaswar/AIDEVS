@@ -58,20 +58,33 @@ def create_project_from_spec(session, user, spec, prompt="", reference_url=""):
 
 
 # ------------------------------------------------------------------ generation
+def _page_is_empty(tree):
+    return not [c for c in (tree or {}).get("children", []) if not c.get("shared")]
+
+
 @jobs.register("generate")
-def run_generation(ctx, project_id, user_id, reference_summary=""):
+def run_generation(ctx, project_id, user_id, reference_summary="", resume=False):
+    """Generate every page, or with resume=True only the pages that are still empty
+    (e.g. after the free AI capacity ran out part-way). Finished pages are never touched."""
     with session_scope() as s:
         project = s.get(Project, project_id)
         project.status = "generating"
         spec = copy.deepcopy(project.spec)
         ents = entity_dicts(project.entities)
-        pages = [{"id": p.id, "name": p.name, "route": p.route} for p in project.pages]
+        all_pages = [{"id": p.id, "name": p.name, "route": p.route, "empty": _page_is_empty(p.tree)}
+                     for p in project.pages]
+        has_layout = bool((project.layout or {}).get("header"))
         context = memory.build_context(s, project, project.prompt, include_outline=False)
+    pages = [p for p in all_pages if p["empty"]] if resume else all_pages
+    already_done = len(all_pages) - len(pages)
 
-    ctx.step("Architect: building shared navigation and footer", 5)
-    layout = architect.build_layout(spec, pages)
-    with session_scope() as s:
-        s.get(Project, project_id).layout = layout
+    if resume and has_layout:
+        ctx.step(f"Continuing generation: {already_done} page(s) already built, {len(pages)} to go", 5)
+    else:
+        ctx.step("Architect: building shared navigation and footer", 5)
+        layout = architect.build_layout(spec, all_pages)
+        with session_scope() as s:
+            s.get(Project, project_id).layout = layout
 
     spec_pages = {p["route"]: p for p in spec.get("pages", [])}
     fallbacks = 0
@@ -84,7 +97,17 @@ def run_generation(ctx, project_id, user_id, reference_summary=""):
                                              reference_summary=reference_summary,
                                              user_id=user_id, project_id=project_id)
         except AIError as exc:
-            if isinstance(exc, (AIRateLimited, AIQuotaExceeded, AINotConfigured)):
+            if isinstance(exc, AIRateLimited):
+                # Free AI capacity ran out part-way: keep the finished pages and tell the user exactly
+                # where things stand; "Continue generation" builds only the remaining pages later.
+                done = already_done + i
+                wait = exc.retry_after or 60
+                when = f"{int(wait) + 1} seconds" if wait < 120 else f"{int(wait // 60) + 1} minutes"
+                raise AIRateLimited(
+                    f"Generation paused: {done} of {len(all_pages)} pages are built. The shared free AI capacity is "
+                    f"used up for now - click 'Continue generation' in about {when} to build the remaining "
+                    f"{len(all_pages) - done} page(s). Finished pages are kept.", str(exc), retry_after=wait) from exc
+            if isinstance(exc, (AIQuotaExceeded, AINotConfigured)):
                 # Capacity/configuration problem, not bad output: stop (the user's quota is refunded)
                 # instead of silently filling the project with template pages.
                 raise
@@ -128,7 +151,8 @@ def _generation_failed(_run_id, args, message):
     with session_scope() as s:
         project = s.get(Project, args[0])
         if project:
-            project.status = "failed"
+            # "partial" = some pages exist and generation can be continued; "failed" = nothing usable yet.
+            project.status = "partial" if any(not _page_is_empty(p.tree) for p in project.pages) else "failed"
             memory.remember(s, project.id, "error", f"Generation failed: {message}")
 
 

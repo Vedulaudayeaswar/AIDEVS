@@ -332,3 +332,51 @@ def test_daily_quota_exhaustion_fails_fast_and_refunds(client, headers, fake_ai)
     assert all(v["cooldownSeconds"] > 600 for v in snapshot.values())  # every model cooled down for long
     blocked = client.post("/api/projects", json={"spec": spec}, headers=headers)
     assert blocked.status_code == 503 and "paused" in blocked.get_json()["error"]
+
+
+def test_generation_pauses_part_way_and_continue_builds_only_empty_pages(client, headers, fake_ai):
+    """Real scenario (2026-11-10): the free AI quota ran out after 2 of 6 pages."""
+    import json as _json
+    from tests.conftest import page_response
+    calls = {"n": 0}
+
+    def flaky_pages(user):
+        calls["n"] += 1
+        if calls["n"] >= 2:  # capacity runs out while designing the second page
+            err = Exception("429 Rate limit reached on tokens per day (TPD): Limit 200000, Used 199999, Requested 5000")
+            err.status_code = 429
+            return err
+        return page_response(user.split("(route ")[1].split(")")[0])
+    spec = client.post("/api/projects/plan", json={"prompt": "sneaker store"}, headers=headers).get_json()["spec"]
+    fake_ai.overrides["page"] = flaky_pages
+    body = client.post("/api/projects", json={"spec": spec}, headers=headers).get_json()
+    run, pid = body["run"], body["project"]["id"]
+    assert run["status"] == "failed" and "1 of 3 pages are built" in run["error"] and "Continue generation" in run["error"]
+    project = client.get(f"/api/projects/{pid}", headers=headers).get_json()["project"]
+    assert project["status"] == "partial"
+    assert [p["sectionCount"] > 0 for p in project["pages"]] == [True, False, False]
+    home_before = load_page(client, headers, pid, "/")["tree"]
+
+    ai_capacity.reset()
+    fake_ai.overrides.pop("page")
+    resumed = client.post(f"/api/projects/{pid}/generate", json={"resume": True}, headers=headers).get_json()["run"]
+    assert resumed["status"] == "succeeded", resumed
+    assert any("2 to go" in s["message"] for s in resumed["steps"])
+    project = client.get(f"/api/projects/{pid}", headers=headers).get_json()["project"]
+    assert project["status"] == "ready" and all(p["sectionCount"] > 0 for p in project["pages"])
+    page_calls = [c for c in fake_ai.calls if c["kind"] == "page"]
+    assert all("(route /)" not in c["user"] for c in page_calls[-2:])  # finished page not regenerated
+    assert _json.dumps(load_page(client, headers, pid, "/")["tree"]) == _json.dumps(home_before)
+
+
+def test_ai_made_duplicate_navbar_and_footer_are_dropped():
+    from agents.studio.architect import make_validator
+    data = {"nodes": [
+        {"id": "n", "parent": None, "type": "section", "name": "Navigation", "tag": "nav"},
+        {"id": "l", "parent": "n", "type": "link", "name": "Logo", "props": {"text": "X", "href": "/"}},
+        {"id": "h", "parent": None, "type": "section", "name": "Hero"},
+        {"id": "t", "parent": "h", "type": "heading", "props": {"text": "Hi"}},
+        {"id": "f", "parent": None, "type": "section", "name": "Footer", "tag": "footer"}]}
+    tree = make_validator({})(data)["tree"]
+    assert [c["name"] for c in tree["children"]] == ["Hero"]
+    assert tree["children"][0]["children"][0]["tag"] == "h1"  # heading normalised to the page's h1

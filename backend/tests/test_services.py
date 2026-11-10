@@ -119,6 +119,8 @@ def test_exported_project_installs_and_passes_its_own_tests(client, headers, fak
     assert "gsk_" not in env_example and "GROQ" not in env_example  # no platform secrets
     result = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:asyncio", "-p", "no:cacheprovider"],
                             cwd=root / "backend", capture_output=True, text=True, timeout=300,
-                            env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"})
+                            env={k: v for k, v in os.environ.items()
+                                 if k not in ("JWT_SECRET_KEY", "DATABASE_URL", "GROQ_API_KEY", "CORS_ORIGINS")}
+                            | {"PYTHONDONTWRITEBYTECODE": "1"})
     assert result.returncode == 0, result.stdout[-3000:] + result.stderr[-2000:]
     assert " passed" in result.stdout

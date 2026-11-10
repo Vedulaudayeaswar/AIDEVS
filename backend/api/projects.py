@@ -25,6 +25,7 @@ MAX_PREVIEW_RECORDS = 500
 # ------------------------------------------------------------------ helpers
 def page_dict(page, project, with_tree=True):
     data = {"id": page.id, "name": page.name, "route": page.route, "position": page.position,
+            "sectionCount": len([c for c in (page.tree or {}).get("children", []) if not c.get("shared")]),
             "revision": page.revision, "seo": page.seo or {},
             "updatedAt": page.updated_at.isoformat() if page.updated_at else None}
     if with_tree:
@@ -254,8 +255,9 @@ def regenerate(project_id):
     quota_id = limits.consume(s, current_user.id, "generate")
     versions.snapshot(s, project, "Before regeneration", "auto-ai", current_user.id)
     s.commit()
+    resume = bool(json_body().get("resume"))  # only build pages that are still empty
     run = _submit_or_refund(s, quota_id, project.id, current_user.id, "generate", "generate",
-                            project.id, current_user.id, "")
+                            project.id, current_user.id, "", resume)
     return jsonify(run=run_dict(run)), 202
 
 

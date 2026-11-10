@@ -127,8 +127,8 @@ def create_app(overrides=None):
     return app
 
 
-app = create_app() if os.getenv("JWT_SECRET_KEY") else None
-
+# No module-level app: servers use the factory (gunicorn "app:create_app()"), so importing this
+# module (e.g. in tests) never fails because of local environment settings.
 if __name__ == "__main__":
     create_app().run(host="0.0.0.0", port=int(os.getenv("PORT", "5000")), debug=os.getenv("FLASK_DEBUG") == "1")
 '''

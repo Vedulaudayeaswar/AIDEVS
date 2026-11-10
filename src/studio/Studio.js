@@ -359,6 +359,14 @@ export default function Studio() {
     }
   };
 
+  const continueGeneration = async () => {
+    try {
+      await flushSave();
+      const res = await api.post(`/api/projects/${projectId}/generate`, { resume: true });
+      setActiveRun(res.run);
+    } catch (err) { showError(err.message); }
+  };
+
   const cancelRun = async () => {
     if (!activeRun) return;
     try {
@@ -463,6 +471,18 @@ export default function Studio() {
         </div>
       </div>
 
+      {!activeRun && ["partial", "failed"].includes(project.status) && (
+        <div className="aid-alert aid-alert-info st-banner" role="status">
+          {(() => {
+            const empty = project.pages.filter((p) => p.sectionCount === 0).length;
+            return empty > 0
+              ? `${project.pages.length - empty} of ${project.pages.length} pages are built. The rest were not generated because the free AI capacity ran out.`
+              : "The last AI generation did not finish.";
+          })()}
+          <button className="aid-btn aid-btn-sm aid-btn-primary" onClick={continueGeneration}>Continue generation</button>
+          <span className="st-note">Only empty pages are built; your finished pages and edits are kept.</span>
+        </div>
+      )}
       {conflict && (
         <div className="aid-alert aid-alert-error st-banner">This page changed elsewhere (another tab or an AI task).
           <button className="aid-btn aid-btn-sm" onClick={() => loadPage(pageId)}>Reload latest</button></div>

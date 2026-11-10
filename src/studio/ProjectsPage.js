@@ -226,7 +226,8 @@ export default function ProjectsPage() {
                 <div className="pp-card-body">
                   <h3>{p.name}</h3>
                   <p className="pp-muted">{p.pageCount} page(s) · updated {new Date(p.updatedAt || p.createdAt).toLocaleString()}</p>
-                  <span className={`aid-badge ${p.status === "ready" ? "ok" : p.status === "failed" ? "err" : "run"}`}>{p.status}</span>
+                  <span className={`aid-badge ${p.status === "ready" ? "ok" : p.status === "failed" ? "err" : p.status === "partial" ? "warn" : "run"}`}>
+                    {p.status === "partial" ? "partly built" : p.status}</span>
                 </div>
                 <div className="pp-card-actions">
                   <Link className="aid-btn aid-btn-primary aid-btn-sm" to={`/studio/${p.id}`}>Open</Link>

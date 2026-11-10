@@ -8,6 +8,18 @@ from services import templates as T
 from services.schema import SchemaError, all_ids, sanitize_subtree, sanitize_tree, unflatten, walk
 
 
+_LAYOUT_NAMES = {"nav", "navbar", "navigation", "main navigation", "site navigation", "header", "site header",
+                 "top bar", "topbar", "footer", "site footer", "page footer"}
+
+
+def _is_layout_duplicate(section):
+    """The shared navbar/footer already exist on every page; models sometimes add their own anyway."""
+    if not isinstance(section, dict):
+        return False
+    name = str(section.get("name", "")).strip().lower()
+    return section.get("tag") in ("nav", "footer") or name in _LAYOUT_NAMES
+
+
 def normalize_headings(tree):
     """Exactly one h1 per page (SEO/accessibility): promote the first heading if none,
     demote extra h1s to h2. Deterministic, so the model does not need another round-trip."""
@@ -52,7 +64,8 @@ def make_validator(entity_map):
             data = {**data, "sections": unflatten(data["nodes"])}  # flat format (preferred)
         if not isinstance(data, dict) or not isinstance(data.get("sections"), list) or not data["sections"]:
             raise SchemaError('expected {"nodes": [...]} with at least one top-level section')
-        tree, warnings = sanitize_tree({"type": "page", "name": "Page", "children": data["sections"][:10]})
+        sections = [sec for sec in data["sections"][:10] if not _is_layout_duplicate(sec)]
+        tree, warnings = sanitize_tree({"type": "page", "name": "Page", "children": sections})
         normalize_headings(tree)
         if len(tree["children"]) == 0:
             raise SchemaError("no valid sections")
