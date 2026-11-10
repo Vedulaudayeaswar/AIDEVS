@@ -392,3 +392,18 @@ def test_ai_tokens_fix_unreadable_contrast():
     assert contrast_ratio(fixed["onPrimary"], fixed["primary"]) >= 4.5
     # a user's manual choice in the editor is kept as-is
     assert sanitize_tokens(bad)["colors"]["text"] == "#4e535a"
+
+
+def test_ai_context_lists_uploaded_images(client, headers, fake_ai):
+    import io as _io
+    from PIL import Image
+    project = client.post("/api/projects", json={"blank": True}, headers=headers).get_json()["project"]
+    buf = _io.BytesIO()
+    Image.new("RGB", (8, 6), "blue").save(buf, "PNG")
+    up = client.post(f"/api/projects/{project['id']}/assets", headers=headers,
+                     data={"file": (_io.BytesIO(buf.getvalue()), "hero.png")}, content_type="multipart/form-data")
+    asset_id = up.get_json()["asset"]["id"]
+    client.post(f"/api/projects/{project['id']}/assistant", json={"message": "use my image in the hero"},
+                headers=headers)
+    feature_calls = [c for c in fake_ai.calls if c["kind"] == "feature"]
+    assert feature_calls and f"/api/assets/{asset_id}" in feature_calls[-1]["user"]

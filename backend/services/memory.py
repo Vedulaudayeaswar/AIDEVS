@@ -10,7 +10,7 @@ import re
 
 from sqlalchemy import select
 
-from models import ChatMessage, MemoryItem
+from models import Asset, ChatMessage, MemoryItem
 
 WORD = re.compile(r"[a-z0-9]{3,}")
 
@@ -49,6 +49,13 @@ def build_context(session, project, query="", include_outline=True, limit_chars=
             f"{e.name}({', '.join(f['name'] + ':' + f['type'] for f in e.fields)}) perms={e.permissions}"
             for e in project.entities) if project.entities else "Data models: none",
     ]
+    uploads = session.execute(select(Asset.id, Asset.filename, Asset.width, Asset.height)
+                              .where(Asset.project_id == project.id)
+                              .order_by(Asset.created_at.desc()).limit(12)).all()
+    if uploads:
+        parts.append("Uploaded images (the user's own files; use exactly this src for image nodes or "
+                     "backgroundImage url(...)):\n" + "\n".join(
+                         f"- /api/assets/{a.id}  ({a.filename}, {a.width}x{a.height})" for a in uploads))
     if include_outline:
         for page in project.pages[:8]:
             parts.append(f"Page {page.route} sections:\n" + "\n".join(outline(page.tree, max_depth=1)))
